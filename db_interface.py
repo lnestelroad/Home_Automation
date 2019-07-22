@@ -45,84 +45,117 @@ class Database():
         """
 
         # Creates a table for Bedrooms
-        Bedrooms = "CREATE TABLE Bedrooms(\
+        Bedrooms = "CREATE TABLE IF NOT EXISTS Bedrooms(\
                 RoomID INTEGER PRIMARY KEY AUTOINCREMENT,\
                 RoomName TEXT NOT NULL\
                 );"
         self.cursor.execute(Bedrooms)
 
         # Creates a table for Devices
-        Devices = "CREATE TABLE Devices(\
+        Devices = "CREATE TABLE IF NOT EXISTS Devices(\
                 DeviceID INTEGER PRIMARY KEY AUTOINCREMENT,\
                 Name TEXT NOT NULL,\
                 Purpose TEXT NOT NULL,\
                 Importance TEXT,\
-                Room INTEGER,\
-                FOREIGN KEY(Room) REFERENCES BedRooms(RoomID)\
+                RoomID INTEGER,\
+                FOREIGN KEY(RoomID) REFERENCES BedRooms(RoomID)\
                 );"
         # Executes the above sql command
         self.cursor.execute(Devices)
 
         # Creates a table for Users
-        Users = "CREATE TABLE Users(\
+        Users = "CREATE TABLE IF NOT EXISTS Users(\
                 UserID INTEGER PRIMARY KEY AUTOINCREMENT,\
-                FirstName TEXT NOT NULL,\
-                LastName TEXT NOT NULL,\
+                UserName TEXT NOT NULL,\
                 BluetoothID TEXT NOT NULL,\
                 Access TEXT NOT NULL,\
                 LivingStatus TEXT NOT NULL,\
-                Bedroom TEXT NOT NULL,\
-                FOREIGN KEY(Bedroom) REFERENCES Bedrooms(RoomID)\
+                RoomID INTEGER NOT NULL,\
+                FOREIGN KEY(RoomID) REFERENCES Bedrooms(RoomID)\
                 );"
         self.cursor.execute(Users)
 
         # Creates a table for Pictures
-        Pictures = "CREATE TABLE Pictures(\
+        Pictures = "CREATE TABLE IF NOT EXISTS Pictures(\
                 PictureID INTEGER PRIMARY KEY AUTOINCREMENT,\
                 Date TEXT NOT NULL,\
                 Location TEXT,\
                 Response TEXT,\
-                Person INTEGER,\
-                FOREIGN KEY(Person) REFERENCES Users(UserID)\
+                UserID INTEGER,\
+                FOREIGN KEY(UserID) REFERENCES Users(UserID)\
                 );"
         self.cursor.execute(Pictures)
+
+        # This is the lowest access level for the house. When a new user is added, the room is set for guest which is why its added along with the table definition
+        self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Guest",))
 
         # Execute and commit the sql
         self.cxn.commit()
 
-################### Database adding ###########################################
-    def addDevice(self, _name, _purpose, _importance, _room):
+    def commitChanges(self):
         """
-            Summary: Here is where the admin can add new devices for specific rooms
-            Input: Requires a name, a purpose, and importance, and a room which its located in
-            Output: new device entry
+            Summay: This will be used only to commit changes so that its done at specific points rather than after every function call.
+            Input: none
+            Output: none
         """
-        pass
+        self.cxn.commit()
 
+    def Destroy(self):
+        """ Destroys the database. For testing pusposes only """
+        self.cursor.execute("DROP TABLE Bedrooms;")
+        self.cursor.execute("DROP TABLE Users;")
+        self.cursor.execute("DROP TABLE Pictures;")
+        self.cursor.execute("DROP TABLE Devices;")
+        
+        self.commitChanges()
+
+################### Database inserting ########################################
     def addRoom(self, _name):
         """
             Summary: Here is where the admin will be able to add new rooms the the database. Will probably never be used except during setup.
             Input:  Requires a name for the room
             Output: New entry in the rooms table
         """
-        pass
+        self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", (_name,))
+    
+    def addDevice(self, _name, _purpose, _importance, _room):
+        """
+            Summary: Here is where the admin can add new devices for specific rooms
+            Input: Requires a name, a purpose, and importance, and a room which its located in
+            Output: new device entry
+        """
+        self.cursor.execute("SELECT RoomID FROM Bedrooms WHERE RoomName = ?;", (_room,))
+        roomID = self.cursor.fetchall()
 
-    def addUser(self, _firstName, _lastName, _bluetooth, _access, _livingStatus, _bedroom):
+        # TODO: see why sql will still allow foreign keys outside of other tables index to still be entered.
+
+        self.cursor.execute("INSERT INTO Devices (Name, Purpose, Importance, RoomID) \
+            Values (?,?,?,?);",(_name, _purpose, _importance, roomID[0][0])) 
+
+    def addUser(self, _userName, _bluetooth, _access, _livingStatus, _room="Guest"):
         """
             Summary: Here is where the admin can add new users whether they be perminate or temporary
             Input: Requires basically everything about the user.
             Output: new user entry
         """
-        pass
+        self.cursor.execute("SELECT RoomID FROM Bedrooms WHERE RoomName = ?;", (_room,))
+        roomID = self.cursor.fetchall()
+   
+        self.cursor.execute("INSERT INTO Users (UserName, BluetoothID, Access, LivingStatus, RoomID)\
+            VALUES (?,?,?,?,?);", (_userName, _bluetooth, _access, _livingStatus, roomID[0][0]))
 
-    def addEntry(self, _date, _time, _location, _response, _user):
+    def addEntry(self, _date, _location, _response, _user):
         """
             Summary: Whenever the camera at the door is activated, the computer will use this function to add 
                 an entry of the user entering
             Input: Requires the date, time, location, response, and the user who entered
             Output:
         """
-        pass
+        self.cursor.execute("SELECT UserID FROM Users WHERE UserName = ?;", (_user,))
+        IdentifiedUser = self.cursor.fetchall()
+
+        self.cursor.execute("INSERT INTO Pictures (Date, Location, Response, UserID)\
+            VALUES (?,?,?,?);", (_date, _location, _response, IdentifiedUser))
 
 #################### Database retrieval #######################################
     def getUsers(self):
@@ -157,13 +190,7 @@ class Database():
         """
         pass
 
-    def commitChanges(self):
-        """
-            Summay: This will be used only to commit changes so that its done at specific points rather than after every function call.
-            Input: none
-            Output: none
-        """
-        self.cxn.commit()
+    
 
 ##############################################################
 
@@ -173,8 +200,15 @@ def main():
     print ("Hello, World!")
 
     interface = Database()
-
     interface.connectToDatabase()
+    interface.setupTables()
+
+    interface.addRoom("Liam's Room")
+    interface.addDevice("Google Home", "Central Unit", "Medium", "Liam's Room")   
+    interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Admin", "Perminant", "Liam's Room")
+    interface.commitChanges()
+
+    interface.Destroy()
 
 if __name__ == "__main__":
     main()
