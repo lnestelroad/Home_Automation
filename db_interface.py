@@ -2,6 +2,7 @@
 
 import sqlite3
 import argparse
+import datetime
 
 class Database():
     """
@@ -110,6 +111,9 @@ class Database():
         self.commitChanges()
 
 ################### Database inserting ########################################
+
+    # TODO: make procedure for what happens when a foreign key is not in the database
+
     def addRoom(self, _name):
         """
             Summary: Here is where the admin will be able to add new rooms the the database. Will probably never be used except during setup.
@@ -155,30 +159,74 @@ class Database():
         IdentifiedUser = self.cursor.fetchall()
 
         self.cursor.execute("INSERT INTO Pictures (Date, Location, Response, UserID)\
-            VALUES (?,?,?,?);", (_date, _location, _response, IdentifiedUser))
+            VALUES (?,?,?,?);", (_date, _location, _response, IdentifiedUser[0][0]))
 
 #################### Database retrieval #######################################
-    def getUsers(self):
+    def getUsers(self, request = 100):
         """
             Summary: This will be used by the GUI to show the admin the current Users Table
             Input: none
-            Output: All entries in the user table
+            Output: All entries in the user table <list of tuples>
         """
-        pass
+        self.cursor.execute("SELECT Users.UserName, Users.BluetoothID, Users.Access, Users.LivingStatus, Bedrooms.RoomName\
+            FROM Users\
+            INNER JOIN Bedrooms\
+            ON Bedrooms.RoomID = Users.RoomID;")
+
+        user_table_entries = self.cursor.fetchall()
+        print(user_table_entries)
+
+        return user_table_entries
     
-    def getEntry(self):
+    def getEntry(self, request = 0):
         """
-            Summary: This will be used by the GUI to show the admin the current Entries Table
-            Input: none
-            Output: All entries into the house
+            Summary: This will be used by the GUI to show the admin the current Entries Table. Since this table will eventually get huge,
+                two options have been implemented. A size request will let the user select how many entries they want to see. The parameter
+                has been given a default size of 0 which will indcate the program to return all entries.
+            Input: requested size <int>
+            Output: All entries into the house <list of tuples>
         """
-        pass
+
+        # Submits sql query for the pictures table. The table is selected with decreasing order so that the most resent is given first
+        self.cursor.execute("SELECT Pictures.PictureID, Pictures.Date, Pictures.Location, Pictures.Response, Users.UserName\
+            FROM Pictures\
+            INNER JOIN Users\
+            ON Users.UserID = Pictures.UserID\
+            ORDER BY PictureID DESC;")
+
+        # checks to see if the user has given a desired amount of entries to be returned
+        if request != 0:
+
+            # initializes required variables
+            pictures_table_entries = []
+            amount = 0
+        
+            # loops for the amount of entries wanted by the user
+            while amount < request:
+
+                # saves the first retrieved entry in a temp variable to be saved in list later
+                tmp = self.cursor.fetchone()
+                
+                # determines if the entries in the table are less then the requested amount
+                if not tmp:
+                    break
+
+                # adds the retrieved data to the return list
+                pictures_table_entries.append(tmp)
+                amount += 1
+        else:
+
+            # retrieves all entries should the user not give a request amount
+            pictures_table_entries = self.cursor.fetchall()
+
+        print(pictures_table_entries)
+        return pictures_table_entries
 
     def getRooms(self):
         """
             Summary: This will be used by the GUI to show the admin the current Rooms Table
             Input: none
-            Output: All rooms in the house
+            Output: All rooms in the house <list of tuples>
         """
         pass
     
@@ -186,7 +234,7 @@ class Database():
         """
             Summary: This will be used by the GUI to show the admin the current Devices Table
             Input: none
-            Output: All entries in the devices table
+            Output: All entries in the devices table <list of tuples>
         """
         pass
 
@@ -199,15 +247,37 @@ def main():
 
     print ("Hello, World!")
 
+    # Database add check
     interface = Database()
     interface.connectToDatabase()
     interface.setupTables()
 
+    # Room add check
     interface.addRoom("Liam's Room")
-    interface.addDevice("Google Home", "Central Unit", "Medium", "Liam's Room")   
+    interface.addRoom("Isaac's Room")
+
+    # Device add check
+    interface.addDevice("Google Home", "Central Unit", "Medium", "Liam's Room")
+
+    # User add Check
     interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Admin", "Perminant", "Liam's Room")
+    interface.addUser("Isaac_Martienz", "12:34:56:78:90", "Normie", "Perminate", "Isaac's Room")
+
+    # Pictures add check
+    now = datetime.datetime.now()
+    interface.addEntry(now, "Front Door", "Accepted", "Liam_Nestelroad")
+    interface.addEntry(now, "Garage", "Accepted", "Liam_Nestelroad")
+
+    # Change check
     interface.commitChanges()
 
+    # User retrieval check 
+    interface.getUsers()
+    interface.getEntry(1)
+    interface.getEntry()
+
+
+    # Database removal check
     interface.Destroy()
 
 if __name__ == "__main__":
