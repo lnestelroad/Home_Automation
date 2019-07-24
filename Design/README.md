@@ -132,3 +132,7 @@ Thankfully, the circuitry for this project will not be very complicated. The ide
 #### Plan B
 
 Lets just imagine for a minute that all power in the boulder area suddenly goes off. Uh oh, now everything thats controlling my house is now more useless than an aerospace degree. If everything is locked before the power outage happens then I will be locked out of my door. To solve this, each component will be equipped with an UPS and then set to power off closed with the exception of one door in the back. But wait, everything has power now, except the router has been destroyed by the dog, now what. To help solve this one, if a pi looses connection, it will fail open for now.
+
+## References
+
+[PyQt5 StackWidgets](https://www.tutorialspoint.com/pyqt/pyqt_qstackedwidget.htm)

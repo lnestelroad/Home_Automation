@@ -4,12 +4,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPu
 from PyQt5.QtCore import Qt
 import os
 
-class leftList(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class SimpleButton(QWidget):
+class ManageUsers(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -18,7 +13,7 @@ class SimpleButton(QWidget):
         self.layout.addWidget(self.simpleText)
 
 
-class SimpleLabel(QWidget):
+class ManageRooms(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -26,7 +21,8 @@ class SimpleLabel(QWidget):
         self.simpleText = QLabel("Manages Rooms")
         self.layout.addWidget(self.simpleText)
 
-class SimpleLineEdit(QWidget):
+
+class Logs(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -34,12 +30,22 @@ class SimpleLineEdit(QWidget):
         self.simpleText = QLineEdit("Logs")
         self.layout.addWidget(self.simpleText)
 
-class SimpleComboBox(QWidget):
+
+class Diagnostics(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.layout = QHBoxLayout(self)
         self.simpleText = QTextEdit("Diagnostics")
+        self.layout.addWidget(self.simpleText)
+
+
+class SelfDestruct(QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.layout = QHBoxLayout(self)
+        self.simpleText = QTextEdit("Self Destruct")
         self.layout.addWidget(self.simpleText)
         
         
@@ -53,18 +59,23 @@ class Workspace(QWidget):
         self.Menu.insertItem(1, "Manage Rooms")
         self.Menu.insertItem(2, "Logs")
         self.Menu.insertItem(3, "Diagnostics")
+        self.Menu.insertItem(4, "Self Destruct")
+
+        print(self.Menu.sizeHint())
+        self.Menu.setFixedWidth(self.Menu.width() * .3)
 
         self.Stack = QStackedWidget(self)
-        self.Stack.addWidget(SimpleButton())
-        self.Stack.addWidget(SimpleLabel())
-        self.Stack.addWidget(SimpleLineEdit())
-        self.Stack.addWidget(SimpleComboBox())
+        self.Stack.addWidget(ManageUsers())
+        self.Stack.addWidget(ManageRooms())
+        self.Stack.addWidget(Logs())
+        self.Stack.addWidget(Diagnostics())
+        self.Stack.addWidget(SelfDestruct())
 
-        hbox = QHBoxLayout(self)
-        hbox.addWidget(self.Menu)
-        hbox.addWidget(self.Stack)
+        layout = QHBoxLayout(self)
+        layout.addWidget(self.Menu)
+        layout.addWidget(self.Stack)
 
-        self.setLayout(hbox)
+        self.setLayout(layout)
         self.Menu.currentRowChanged.connect(self.display)
 
     def display(self,i):
