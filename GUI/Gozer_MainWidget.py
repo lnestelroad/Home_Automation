@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QMessageBox, QLineEdit, QSizePolicy, QComboBox, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QMessageBox, QLineEdit, QSizePolicy, QComboBox, QLabel, QDockWidget, QTextEdit, QListWidget
+from PyQt5.QtCore import Qt
 import os
 
 class SimpleWidget(QWidget):
@@ -14,6 +15,17 @@ class SimpleWidget(QWidget):
         self.simpleLayout.addStretch(0)
         self.simpleLayout.addWidget(self.simpleTitle)
         self.simpleLayout.addStretch(0)
-        
-        self.setLayout(self.simpleLayout)
 
+        self.dockAble()
+
+
+    def dockAble(self):
+        items = QDockWidget("Menu", self)
+        items.setAllowedAreas(Qt.LeftDockWidgetArea)
+
+        self.options = ["Manage Users", "Manage Rooms", "Logs", "Diagnostics"]
+        self.listOptions = QListWidget(items)
+        self.listOptions.addItems(self.options)
+        self.listOptions.setAlternatingRowColors(True)
+
+        items.setWidget(self.listOptions)
