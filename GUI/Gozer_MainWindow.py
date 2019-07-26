@@ -5,6 +5,9 @@ from PyQt5.QtWidgets import QMainWindow, QMenu, QAction, QMenuBar
 from Gozer_Widgets import Workspace, ManageRooms, ManageUsers, Logs, Diagnostics, SelfDestruct
 
 class MenuBar(QMenuBar):
+    """
+        Summary:
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

@@ -9,10 +9,11 @@ import signal
 
 def main():
     app = QApplication(sys.argv)
-    # app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    
     mw = MainWindow()
-    mw.setGeometry(0, 0, mw.width()*2, mw.height()*2) #  
+    mw.setGeometry(0, 0, mw.width()*2, mw.height()*2)
     mw.show()
+
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     exit(app.exec())
 

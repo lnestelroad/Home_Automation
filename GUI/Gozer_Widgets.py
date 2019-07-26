@@ -5,6 +5,11 @@ from PyQt5.QtCore import Qt
 import os
 
 class ManageUsers(QWidget):
+    """
+        Summary:
+        Input:
+        Output:
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -14,6 +19,11 @@ class ManageUsers(QWidget):
 
 
 class ManageRooms(QWidget):
+    """
+        Summary:
+        Input:
+        Output:
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -23,6 +33,9 @@ class ManageRooms(QWidget):
 
 
 class Logs(QWidget):
+    """
+        Summary:
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -32,6 +45,9 @@ class Logs(QWidget):
 
 
 class Diagnostics(QWidget):
+    """
+        Summary:
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -41,6 +57,9 @@ class Diagnostics(QWidget):
 
 
 class SelfDestruct(QWidget):
+    """
+        Summary:
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -50,6 +69,9 @@ class SelfDestruct(QWidget):
         
         
 class Workspace(QWidget):
+    """
+        Summary:
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -78,5 +100,5 @@ class Workspace(QWidget):
         self.setLayout(layout)
         self.Menu.currentRowChanged.connect(self.display)
 
-    def display(self,i):
+    def display(self, i):
         self.Stack.setCurrentIndex(i)
