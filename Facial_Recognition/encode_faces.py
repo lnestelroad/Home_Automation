@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#COMMAND: python3 encode_faces.py --dataset dataset --encodings encodings.pickle
+
 from imutils import paths
 import face_recognition
 import argparse

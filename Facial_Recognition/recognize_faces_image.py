@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+
+# COMMAND: python3 recognize_faces_image.py --encodings encodings.pickle --image examples/example_03.png
+
 # import the necessary packages
 import face_recognition
 import argparse
