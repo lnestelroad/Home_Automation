@@ -70,7 +70,6 @@ class Database():
                 UserName TEXT NOT NULL,\
                 BluetoothID TEXT NOT NULL,\
                 Access TEXT NOT NULL,\
-                LivingStatus TEXT NOT NULL,\
                 RoomID INTEGER NOT NULL,\
                 FOREIGN KEY(RoomID) REFERENCES Bedrooms(RoomID)\
                 );"
@@ -136,17 +135,17 @@ class Database():
         self.cursor.execute("INSERT INTO Devices (Name, Purpose, Importance, RoomID) \
             Values (?,?,?,?);",(_name, _purpose, _importance, roomID[0][0])) 
 
-    def addUser(self, _userName, _bluetooth, _access, _livingStatus, _room="Guest"):
+    def addUser(self, _userName, _bluetooth, _access="Guest"):
         """
             Summary: Here is where the admin can add new users whether they be perminate or temporary
             Input: Requires basically everything about the user.
             Output: new user entry
         """
-        self.cursor.execute("SELECT RoomID FROM Bedrooms WHERE RoomName = ?;", (_room,))
+        self.cursor.execute("SELECT RoomID FROM Bedrooms WHERE RoomName = ?;", (_access,))
         roomID = self.cursor.fetchall()
    
-        self.cursor.execute("INSERT INTO Users (UserName, BluetoothID, Access, LivingStatus, RoomID)\
-            VALUES (?,?,?,?,?);", (_userName, _bluetooth, _access, _livingStatus, roomID[0][0]))
+        self.cursor.execute("INSERT INTO Users (UserName, BluetoothID, Access, RoomID)\
+            VALUES (?,?,?,?);", (_userName, _bluetooth, _access, roomID[0][0]))
 
     def addEntry(self, _date, _location, _response, _user):
         """
@@ -170,7 +169,7 @@ class Database():
             Output: All entries in the user table <list of tuples>
         """
         # Here the SELECT has no ORDER BY since the users table is not dependent on times
-        self.cursor.execute("SELECT Users.UserName, Users.BluetoothID, Users.Access, Users.LivingStatus, Bedrooms.RoomName\
+        self.cursor.execute("SELECT Users.UserName, Users.BluetoothID, Users.Access, Bedrooms.RoomName\
             FROM Users\
             INNER JOIN Bedrooms\
             ON Bedrooms.RoomID = Users.RoomID;")
@@ -310,6 +309,8 @@ def main():
     interface.setupTables()
 
     #/////////////////////////////////////////////////////
+    # Database removal check
+    interface.Destroy()
 
     # Room add check
     interface.addRoom("Liam's Room")
@@ -322,8 +323,8 @@ def main():
     interface.addDevice("Philibs Light", "Lights room", "Low", "Isaac's Room")
 
     # User add Check
-    interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Admin", "Perminant", "Liam's Room")
-    interface.addUser("Isaac_Martienz", "12:34:56:78:90", "Normie", "Perminate", "Isaac's Room")
+    interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Liam's Room")
+    interface.addUser("Isaac_Martienz", "12:34:56:78:90", "Isaac's Room")
 
     # Pictures add check
     now = datetime.datetime.now()
@@ -349,8 +350,6 @@ def main():
     interface.getDevices("Liam's Room")
     interface.getDevices("Isaac's Room")
 
-    # Database removal check
-    # interface.Destroy()
 
 if __name__ == "__main__":
     main()

@@ -6,7 +6,8 @@ from Gozer_Widgets import Workspace, ManageRooms, ManageUsers, Logs, Diagnostics
 
 class MenuBar(QMenuBar):
     """
-        Summary:
+        Summary: This class is a custom widget for the menu bar. As of now, it will only have 3 options 
+            and the file option will only have a quite button.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
