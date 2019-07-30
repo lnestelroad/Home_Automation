@@ -109,6 +109,34 @@ class Database():
         
         self.commitChanges()
 
+    def countUsers(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Users")
+        userCount = self.cursor.fetchone()
+
+        return userCount
+
+    def countDevices(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Devices")
+        deviceCount = self.cursor.fetchone()
+
+        return deviceCount
+
+    def countPictures(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Pictures")
+        pictureCount = self.cursor.fetchone()
+
+        return pictureCount
+
+    def countRooms(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Bedrooms")
+        roomCount = self.cursor.fetchone()
+
+        return roomCount
+
 ################### Database inserting ########################################
 
     # TODO: make procedure for what happens when a foreign key is not in the database
@@ -306,11 +334,12 @@ def main():
     # Database add check
     interface = Database()
     interface.connectToDatabase()
+
+    # Database removal check
+    interface.Destroy()
     interface.setupTables()
 
     #/////////////////////////////////////////////////////
-    # Database removal check
-    interface.Destroy()
 
     # Room add check
     interface.addRoom("Liam's Room")
@@ -349,6 +378,12 @@ def main():
     # Devices retrieval check
     interface.getDevices("Liam's Room")
     interface.getDevices("Isaac's Room")
+
+    # Table Counts
+    print(interface.countUsers())
+    print(interface.countDevices())
+    print(interface.countRooms())
+    print(interface.countPictures())
 
 
 if __name__ == "__main__":

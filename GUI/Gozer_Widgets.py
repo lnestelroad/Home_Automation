@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
+import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QMessageBox
 from PyQt5.QtWidgets import QLineEdit, QSizePolicy, QComboBox, QLabel, QDockWidget, QTextEdit, QListWidget
-from PyQt5.QtWidgets import QStackedWidget, QFormLayout, QRadioButton, QProgressBar, QGridLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QStackedWidget, QFormLayout, QRadioButton, QProgressBar, QGridLayout, QTableWidget, QTableWidgetItem, QAbstractScrollArea
 from PyQt5.QtCore import Qt
 import os
+
+sys.path.append("../Database")
+from db_interface import Database
 
 class ManageUsers(QWidget):
     """
@@ -62,10 +66,23 @@ class ManageUsers(QWidget):
 
         #//////////////////////////////////////////////////////////////////////////////// Table Layout
         #TODO: change the dimension of the table to allow for all database entries
-        userTable = QTableWidget(4, 3, self)
-        userEntry = QTableWidgetItem("test")
+        Database.connectToDatabase(self)
+        users = Database.getUsers(self)
+        userCount = Database.countUsers(self)
+
+        userTable = QTableWidget(userCount[0], 3, self)
         
-        userTable.setItem(0,0,userEntry)
+        for i in range(0, userCount[0]):
+            userName = QTableWidgetItem("{}".format(users[i][0]))
+            userBluetooth = QTableWidgetItem("{}".format(users[i][1]))
+            userRoom = QTableWidgetItem("{}".format(users[i][2]))
+            
+            userTable.setItem(i,0,userName)
+            userTable.setItem(i,1,userBluetooth)
+            userTable.setItem(i,2,userRoom)
+
+        userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        userTable.resizeColumnsToContents()
 
         #////////////////////////////////////////////////////////////////////////////////
         widgetTitle = QLabel("Manage Users")
