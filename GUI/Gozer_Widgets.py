@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QLineEdit, QSizePolicy, QComboBox, QLabel, QDockWidg
 from PyQt5.QtWidgets import QStackedWidget, QFormLayout, QRadioButton, QProgressBar, QGridLayout, QTableWidget, QTableWidgetItem, QAbstractScrollArea
 from PyQt5.QtCore import Qt
 import os
+import shutil
 
 sys.path.append("../Database")
 from db_interface import Database
@@ -26,15 +27,17 @@ class ManageUsers(QWidget):
         
         #//////////////////////////////////////////////////////////////////////////////// Form layout
         #TODO: add additional options for time frame when guest is selected
+        #TODO: make the access box select room from database instead of hardcoded.
 
         # Widget for the access combo box
         self.accessBox = QComboBox()
         self.accessBox.setEditable(False)
-        self.accessBox.addItems(["Guest", "Ryan's Room", "Liam's room", "Isaac's Room", "Izzy's Room", "Master"])
+        self.accessBox.addItems(["Guest", "Ryan's Room", "Liam's Room", "Isaac's Room", "Izzy's Room", "Master"])
 
         self.FirstName = QLineEdit()
         self.lastName = QLineEdit()
         self.bluetooth = QLineEdit()
+        
 
         # Layout which holds all of the user data input fields
         self.form = QFormLayout()
@@ -45,6 +48,8 @@ class ManageUsers(QWidget):
 
         # Connect fields
         self.FirstName.textChanged.connect(self.enableAddUserButton)
+        self.lastName.textChanged.connect(self.enableAddUserButton)
+        self.bluetooth.textChanged.connect(self.enableAddUserButton)
 
         # Here is the button section of the grid layout for uploading and submitting
         submitUserButtonLayout = QHBoxLayout()
@@ -82,24 +87,28 @@ class ManageUsers(QWidget):
 
         #//////////////////////////////////////////////////////////////////////////////// Table Layout
         # Here are all of Database interface functions needed to get the user information
-        Database.connectToDatabase(self)
-        users = Database.getUsers(self)
-        self.userCount = Database.countUsers(self)
+        #TODO: code unpacking
+        self.db = Database()
+        self.db.connectToDatabase()
+        users = self.db.getUsers()
+        self.userCount = self.db.countUsers()
         
         self.userTable = QTableWidget(self.userCount[0], 4, self)
-        self.userTable.setHorizontalHeaderLabels(["User Name", "BluetoothID", "Bedroom"])
+        self.userTable.setHorizontalHeaderLabels(["User Name", "BluetoothID", "Bedroom", "Remove User"])
         
         # Gets all of the users in the database and puts the in the table
         for i in range(0, self.userCount[0]):
             userName = QTableWidgetItem("{}".format(users[i][0]))
             userBluetooth = QTableWidgetItem("{}".format(users[i][1]))
             userRoom = QTableWidgetItem("{}".format(users[i][2]))
-            removeButton = QPushButton("Kill")
+            self.removeButton = QPushButton("Kill")
 
             self.userTable.setItem(i,0,userName)
             self.userTable.setItem(i,1,userBluetooth)
             self.userTable.setItem(i,2,userRoom)
-            self.userTable.setCellWidget(i, 3, removeButton)
+            self.userTable.setCellWidget(i, 3, self.removeButton)
+
+            self.removeButton.clicked.connect(self.RemoveUser)
 
         # These are used to make sure the table is sized to fit all of the information
         self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
@@ -114,21 +123,26 @@ class ManageUsers(QWidget):
         manageUsersLayout.addWidget(self.userTable, 2, 0)
 
     def enableAddUserButton(self):
-        self.add.setDisabled(False)
+        validFirstName = self.FirstName.text() != ""
+        validLastName = self.lastName.text() != ""
+        validBluetooth = self.bluetooth.text() != ""
+        
+        self.add.setEnabled(validBluetooth and validFirstName and validLastName)
 
     def CreateUser(self):
         """
             Summary: Here is where the python script will add all of the user info to both the data base
                 and a directory for pictures to be stored.
         """
+        # TODO: Duplicate users?
         # Gets the data from the form.
         name = self.FirstName.text() + "_" + self.lastName.text()
         bluetooth = self.bluetooth.text()
         access = self.accessBox.currentText()
 
         # Enters data information into the database
-        Database.addUser(self, name, bluetooth, access)
-        Database.commitChanges(self)
+        self.db.addUser(name, bluetooth, access)
+        self.db.commitChanges()
 
         # Enters new data into table view
         rowPosition = self.userTable.rowCount()
@@ -137,14 +151,45 @@ class ManageUsers(QWidget):
         userName = QTableWidgetItem("{}".format(name))
         userBluetooth = QTableWidgetItem("{}".format(bluetooth))
         userAccess = QTableWidgetItem("{}".format(access))
+        removeButton = QPushButton("Kill")
 
         self.userTable.setItem(rowPosition, 0, userName)
         self.userTable.setItem(rowPosition, 1, userBluetooth)
         self.userTable.setItem(rowPosition, 2, userAccess)
+        self.userTable.setCellWidget(rowPosition, 3, removeButton)
+
+        # These are used to make sure the table is sized to fit all of the information
+        self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.userTable.resizeColumnsToContents()
+
+        removeButton.clicked.connect(self.RemoveUser)
 
         # Creates a directory for the users pictures if they are not a guest
+        # TODO: add path which is not a relative path
         if access != "Guest":
             os.mkdir("../Facial_Recognition/dataset/{}".format(name))
+
+    def RemoveUser(self):
+        # Finds the exact row of the button pressed. Thank you Sam from StackOverFlow
+        buttonClicked = self.sender()
+        index = self.userTable.indexAt(buttonClicked.pos())
+        userRow = index.row()
+
+        # User name is extracted from the table then removed
+        item = self.userTable.item(userRow, 0)
+        userName = item.text()
+
+        self.userTable.removeRow(userRow)
+
+        # Users name is removed from the database.
+        self.db.removeUser(userName)
+        self.db.commitChanges()
+
+        # if user was perminate, their directory is removed
+        path = "../Facial_Recognition/dataset/{}".format(userName)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+
 
 class ManageRooms(QWidget):
     """
@@ -227,5 +272,5 @@ class Workspace(QWidget):
         self.setLayout(layout)
         self.Menu.currentRowChanged.connect(self.display)
 
-    def display(self, i):
-        self.Stack.setCurrentIndex(i)
+    def display(self, index):
+        self.Stack.setCurrentIndex(index)

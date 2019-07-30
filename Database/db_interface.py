@@ -27,12 +27,12 @@ class Database():
         """
         try:
             # Create a connection to the database
-            self.cxn = sqlite3.connect("/home/liam_work/Documents/Home_Automation/Gozer_database.db")
+            self.cxn = sqlite3.connect("/home/liam_work/Documents/Home_Automation/Database/Gozer_database.db")
             print("Opening Connections to database")
 
             # Create a cursor from the database connection
             self.cursor = self.cxn.cursor()
-
+        #TODO: add logging for errors and make back up plan for when database fails to connect.
         except sqlite3.Error as error:
             print("Error connecting to database. " + str(error))
 
@@ -109,6 +109,8 @@ class Database():
         self.cursor.execute("DROP TABLE Devices;")
         
         self.commitChanges()
+
+################## Database counting #####################################
 
     def countUsers(self):
         """ Counts the number of entries in the user database """
@@ -190,7 +192,7 @@ class Database():
             VALUES (?,?,?,?);", (_date, _location, _response, IdentifiedUser[0][0]))
 
 #################### Database retrieval #######################################
-    def getUsers(self, request = 100):
+    def getUsers(self, request = 0):
         """
             Summary: This will be used by the GUI to show the admin the current Users Table. Using the request amount method, this function will only
                 return a limited amount
@@ -203,6 +205,7 @@ class Database():
             INNER JOIN Bedrooms\
             ON Bedrooms.RoomID = Users.RoomID;")
 
+        #TODO: add sql limits instead of doing loops
         # checks to see if the user has given a desired amount of entries to be returned
         if request != 0:
 
@@ -324,8 +327,33 @@ class Database():
         
         return(devices_per_room)
     
+#################### Database removal #########################################
+    def removeUser(self, _userName):
+        """
+            Summary: This is what will be called whenever a user is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Users WHERE UserName = ?;", (_userName,))
+        
+    def removeDevice(self, _deviceName):
+        """
+            Summary: This is what will be called whenever a device is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Devices WHERE DeviceName = ?;", (_deviceName,))
 
-##############################################################
+    def removeRoom(self, _roomName):
+        """
+            Summary: This is what will be called whenever a room is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Bedrooms WHERE UserName = ?;", (_roomName,))
+
+    def removeEntry(self, _entryTime):
+        """
+            Summary: This is what will be called whenever a picture is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Pictures WHERE UserName = ?;", (_entryTime,))
+
+
+############################################################## Main Testing
 
 def main():
     """ This is used only for testing purposes"""
@@ -382,6 +410,12 @@ def main():
     # Devices retrieval check
     interface.getDevices("Liam's Room")
     interface.getDevices("Isaac's Room")
+
+    #/////////////////////////////////////////////////////
+
+    # User delete test
+    # interface.removeUser("Liam_Nestelroad")
+    # interface.commitChanges()
 
     # Table Counts
     print(interface.countUsers())
