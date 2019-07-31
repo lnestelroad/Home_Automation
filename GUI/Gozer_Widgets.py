@@ -25,20 +25,24 @@ class ManageUsers(QWidget):
         manageUsersLayout = QGridLayout(self)
         addUsersLayout = QGridLayout()
         
+        self.db = Database()
+        self.db.connectToDatabase()
         #//////////////////////////////////////////////////////////////////////////////// Form layout
         #TODO: add additional options for time frame when guest is selected
-        #TODO: make the access box select room from database instead of hardcoded.
 
         # Widget for the access combo box
         self.accessBox = QComboBox()
         self.accessBox.setEditable(False)
-        self.accessBox.addItems(["Guest", "Ryan's Room", "Liam's Room", "Isaac's Room", "Izzy's Room", "Master"])
+
+        # Gets rooms from the database and adds them to the combo box
+        rooms = self.db.getRooms()
+        for room_index in range(0, self.db.countRooms()[0]):
+            self.accessBox.addItem(rooms[room_index][0])
 
         self.FirstName = QLineEdit()
         self.lastName = QLineEdit()
         self.bluetooth = QLineEdit()
         
-
         # Layout which holds all of the user data input fields
         self.form = QFormLayout()
         self.form.addRow(QLabel("First Name"), self.FirstName)
@@ -76,11 +80,14 @@ class ManageUsers(QWidget):
         self.progress.setValue(0)
         self.upload = QPushButton("Upload")
         self.submit = QPushButton("Submit")
-        self.clear = QPushButton("Clear")
+
+        self.submit.setDisabled(True)
+        self.submit.clicked.connect(self.encodeFace)
+
+        self.upload.clicked.connect(self.uploadPicutes)
 
         buttonLayout.addWidget(self.upload)
         buttonLayout.addWidget(self.submit)
-        buttonLayout.addWidget(self.clear)
         
         SubmitLayout.addWidget(self.progress)
         SubmitLayout.addLayout(buttonLayout)
@@ -90,8 +97,6 @@ class ManageUsers(QWidget):
         #//////////////////////////////////////////////////////////////////////////////// Table Layout
         # Here are all of Database interface functions needed to get the user information
         #TODO: code unpacking
-        self.db = Database()
-        self.db.connectToDatabase()
         userCount = self.db.countUsers()
         print(userCount)
         # Creates empty table widget with headers
@@ -141,8 +146,9 @@ class ManageUsers(QWidget):
 
         # Creates a directory for the users pictures if they are not a guest
         # TODO: add path which is not a relative path
-        # if access != "Guest":
-        #     os.mkdir("../Facial_Recognition/dataset/{}".format(name))
+        if access != "Guest":
+            os.chdir("../Facial_Recognition")
+            os.mkdir("{}".format(name))
 
     def ClearForm(self):
         self.FirstName.setText("")
@@ -199,6 +205,24 @@ class ManageUsers(QWidget):
 
             self.removeButton.clicked.connect(self.RemoveUser)
 
+    def uploadPicutes(self):
+        """
+            Summary: This will have python open a camera module and take a picture of the user. Once the picture is
+                taken, it will be saved in the users designated directory in the facial recognition site.
+        """
+        
+        self.progress.setValue(self.progress.value() + 5)
+
+        if self.progress.value() == 100:
+            self.submit.setEnabled(True)
+
+
+    def encodeFace(self):
+        """
+            Summary: Once enough pictures have been uploaded, this will kick off the encode_faces.py script in the
+                facial recognition directory
+        """
+        pass
 
 class ManageRooms(QWidget):
     """
