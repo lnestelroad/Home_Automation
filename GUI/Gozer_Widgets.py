@@ -3,7 +3,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QMessageBox
 from PyQt5.QtWidgets import QLineEdit, QSizePolicy, QComboBox, QLabel, QDockWidget, QTextEdit, QListWidget
-from PyQt5.QtWidgets import QStackedWidget, QFormLayout, QRadioButton, QProgressBar, QGridLayout, QTableWidget, QTableWidgetItem, QAbstractScrollArea
+from PyQt5.QtWidgets import QStackedWidget, QFormLayout, QRadioButton, QProgressBar, QGridLayout, QTableWidget, QTableWidgetItem, QAbstractScrollArea, QHeaderView, QTableView
 from PyQt5.QtCore import Qt
 import os
 import shutil
@@ -91,15 +91,12 @@ class ManageUsers(QWidget):
         self.db = Database()
         self.db.connectToDatabase()
         userCount = self.db.countUsers()
-    
+        print(userCount)
         # Creates empty table widget with headers
-        self.userTable = QTableWidget(userCount[0], 4, self)
+        self.userTable = QTableWidget(userCount[0] + 1, 4, self)
         self.userTable.setHorizontalHeaderLabels(["User Name", "BluetoothID", "Bedroom", "Remove User"])
-        self.populateTable()
         
-        # These are used to make sure the table is sized to fit all of the information
-        # self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        # self.userTable.resizeColumnsToContents()
+        self.populateTable()
 
         #//////////////////////////////////////////////////////////////////////////////// Main Layout Configuration
         widgetTitle = QLabel("Manage Users")
@@ -134,6 +131,11 @@ class ManageUsers(QWidget):
         # Enters new data into table view
         self.populateTable()
 
+        # Clears the form
+        self.FirstName.setText("")
+        self.lastName.setText("")
+        self.bluetooth.setText("")
+
         # Creates a directory for the users pictures if they are not a guest
         # TODO: add path which is not a relative path
         # if access != "Guest":
@@ -165,28 +167,22 @@ class ManageUsers(QWidget):
             Since this table is recreated every time theres an update, this function will delete the table and 
                 rebuild it.
         """
-        tableCount = self.userTable.rowCount()
-
-        if tableCount != 0:
-            for tableIndex in range(0, tableCount):
-                self.userTable.removeRow(tableIndex)
-
+        # Removes all of the rows currently in the table
+        self.userTable.setRowCount(0)
 
         #//////////////////////////////////////////////////////////////////////// Table rebuild
         # Gets both the users and the user count from database
         users = self.db.getUsers()
         userCount = self.db.countUsers()
 
-        print(users)
+        self.userTable.setRowCount(userCount[0])
 
         # Gets all of the users in the database and puts the in the table
         for i in range(0, userCount[0]):
-            print(i)
             userName = QTableWidgetItem("{}".format(users[i][0]))
             userBluetooth = QTableWidgetItem("{}".format(users[i][1]))
             userRoom = QTableWidgetItem("{}".format(users[i][2]))
             self.removeButton = QPushButton("Kill")
-            print(userBluetooth)
 
             self.userTable.setItem(i,0,userName)
             self.userTable.setItem(i,1,userBluetooth)
@@ -195,7 +191,9 @@ class ManageUsers(QWidget):
 
             self.removeButton.clicked.connect(self.RemoveUser)
 
-
+        # These are used to make sure the table is sized to fit all of the information
+        self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.userTable.resizeColumnsToContents()
 
 
 class ManageRooms(QWidget):
