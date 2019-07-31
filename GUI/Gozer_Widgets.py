@@ -90,29 +90,16 @@ class ManageUsers(QWidget):
         #TODO: code unpacking
         self.db = Database()
         self.db.connectToDatabase()
-        users = self.db.getUsers()
-        self.userCount = self.db.countUsers()
-        
-        self.userTable = QTableWidget(self.userCount[0], 4, self)
+        userCount = self.db.countUsers()
+    
+        # Creates empty table widget with headers
+        self.userTable = QTableWidget(userCount[0], 4, self)
         self.userTable.setHorizontalHeaderLabels(["User Name", "BluetoothID", "Bedroom", "Remove User"])
+        self.populateTable()
         
-        # Gets all of the users in the database and puts the in the table
-        for i in range(0, self.userCount[0]):
-            userName = QTableWidgetItem("{}".format(users[i][0]))
-            userBluetooth = QTableWidgetItem("{}".format(users[i][1]))
-            userRoom = QTableWidgetItem("{}".format(users[i][2]))
-            self.removeButton = QPushButton("Kill")
-
-            self.userTable.setItem(i,0,userName)
-            self.userTable.setItem(i,1,userBluetooth)
-            self.userTable.setItem(i,2,userRoom)
-            self.userTable.setCellWidget(i, 3, self.removeButton)
-
-            self.removeButton.clicked.connect(self.RemoveUser)
-
         # These are used to make sure the table is sized to fit all of the information
-        self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.userTable.resizeColumnsToContents()
+        # self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        # self.userTable.resizeColumnsToContents()
 
         #//////////////////////////////////////////////////////////////////////////////// Main Layout Configuration
         widgetTitle = QLabel("Manage Users")
@@ -145,29 +132,12 @@ class ManageUsers(QWidget):
         self.db.commitChanges()
 
         # Enters new data into table view
-        rowPosition = self.userTable.rowCount()
-        self.userTable.insertRow(rowPosition)
-
-        userName = QTableWidgetItem("{}".format(name))
-        userBluetooth = QTableWidgetItem("{}".format(bluetooth))
-        userAccess = QTableWidgetItem("{}".format(access))
-        removeButton = QPushButton("Kill")
-
-        self.userTable.setItem(rowPosition, 0, userName)
-        self.userTable.setItem(rowPosition, 1, userBluetooth)
-        self.userTable.setItem(rowPosition, 2, userAccess)
-        self.userTable.setCellWidget(rowPosition, 3, removeButton)
-
-        # These are used to make sure the table is sized to fit all of the information
-        self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.userTable.resizeColumnsToContents()
-
-        removeButton.clicked.connect(self.RemoveUser)
+        self.populateTable()
 
         # Creates a directory for the users pictures if they are not a guest
         # TODO: add path which is not a relative path
-        if access != "Guest":
-            os.mkdir("../Facial_Recognition/dataset/{}".format(name))
+        # if access != "Guest":
+        #     os.mkdir("../Facial_Recognition/dataset/{}".format(name))
 
     def RemoveUser(self):
         # Finds the exact row of the button pressed. Thank you Sam from StackOverFlow
@@ -189,6 +159,43 @@ class ManageUsers(QWidget):
         path = "../Facial_Recognition/dataset/{}".format(userName)
         if os.path.isdir(path):
             shutil.rmtree(path)
+
+    def populateTable(self):
+        """
+            Since this table is recreated every time theres an update, this function will delete the table and 
+                rebuild it.
+        """
+        tableCount = self.userTable.rowCount()
+
+        if tableCount != 0:
+            for tableIndex in range(0, tableCount):
+                self.userTable.removeRow(tableIndex)
+
+
+        #//////////////////////////////////////////////////////////////////////// Table rebuild
+        # Gets both the users and the user count from database
+        users = self.db.getUsers()
+        userCount = self.db.countUsers()
+
+        print(users)
+
+        # Gets all of the users in the database and puts the in the table
+        for i in range(0, userCount[0]):
+            print(i)
+            userName = QTableWidgetItem("{}".format(users[i][0]))
+            userBluetooth = QTableWidgetItem("{}".format(users[i][1]))
+            userRoom = QTableWidgetItem("{}".format(users[i][2]))
+            self.removeButton = QPushButton("Kill")
+            print(userBluetooth)
+
+            self.userTable.setItem(i,0,userName)
+            self.userTable.setItem(i,1,userBluetooth)
+            self.userTable.setItem(i,2,userRoom)
+            self.userTable.setCellWidget(i, 3, self.removeButton)
+
+            self.removeButton.clicked.connect(self.RemoveUser)
+
+
 
 
 class ManageRooms(QWidget):
