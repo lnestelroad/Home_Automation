@@ -27,12 +27,12 @@ class Database():
         """
         try:
             # Create a connection to the database
-            self.cxn = sqlite3.connect("/home/liam_work/Documents/Home_Automation/Gozer_database.db")
+            self.cxn = sqlite3.connect("/home/liam_work/Documents/Home_Automation/Database/Gozer_database.db")
             print("Opening Connections to database")
 
             # Create a cursor from the database connection
             self.cursor = self.cxn.cursor()
-
+        #TODO: add logging for errors and make back up plan for when database fails to connect.
         except sqlite3.Error as error:
             print("Error connecting to database. " + str(error))
 
@@ -70,7 +70,6 @@ class Database():
                 UserName TEXT NOT NULL,\
                 BluetoothID TEXT NOT NULL,\
                 Access TEXT NOT NULL,\
-                LivingStatus TEXT NOT NULL,\
                 RoomID INTEGER NOT NULL,\
                 FOREIGN KEY(RoomID) REFERENCES Bedrooms(RoomID)\
                 );"
@@ -89,6 +88,7 @@ class Database():
 
         # This is the lowest access level for the house. When a new user is added, the room is set for guest which is why its added along with the table definition
         self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Guest",))
+        self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Master",))
 
         # Execute and commit the sql
         self.cxn.commit()
@@ -109,6 +109,36 @@ class Database():
         self.cursor.execute("DROP TABLE Devices;")
         
         self.commitChanges()
+
+################## Database counting #####################################
+
+    def countUsers(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Users")
+        userCount = self.cursor.fetchone()
+
+        return userCount
+
+    def countDevices(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Devices")
+        deviceCount = self.cursor.fetchone()
+
+        return deviceCount
+
+    def countPictures(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Pictures")
+        pictureCount = self.cursor.fetchone()
+
+        return pictureCount
+
+    def countRooms(self):
+        """ Counts the number of entries in the user database """
+        self.cursor.execute("SELECT count(*) FROM Bedrooms")
+        roomCount = self.cursor.fetchone()
+
+        return roomCount
 
 ################### Database inserting ########################################
 
@@ -136,17 +166,17 @@ class Database():
         self.cursor.execute("INSERT INTO Devices (Name, Purpose, Importance, RoomID) \
             Values (?,?,?,?);",(_name, _purpose, _importance, roomID[0][0])) 
 
-    def addUser(self, _userName, _bluetooth, _access, _livingStatus, _room="Guest"):
+    def addUser(self, _userName, _bluetooth, _access="Guest"):
         """
             Summary: Here is where the admin can add new users whether they be perminate or temporary
             Input: Requires basically everything about the user.
             Output: new user entry
         """
-        self.cursor.execute("SELECT RoomID FROM Bedrooms WHERE RoomName = ?;", (_room,))
+        self.cursor.execute("SELECT RoomID FROM Bedrooms WHERE RoomName = ?;", (_access,))
         roomID = self.cursor.fetchall()
    
-        self.cursor.execute("INSERT INTO Users (UserName, BluetoothID, Access, LivingStatus, RoomID)\
-            VALUES (?,?,?,?,?);", (_userName, _bluetooth, _access, _livingStatus, roomID[0][0]))
+        self.cursor.execute("INSERT INTO Users (UserName, BluetoothID, Access, RoomID)\
+            VALUES (?,?,?,?);", (_userName, _bluetooth, _access, roomID[0][0]))
 
     def addEntry(self, _date, _location, _response, _user):
         """
@@ -162,7 +192,7 @@ class Database():
             VALUES (?,?,?,?);", (_date, _location, _response, IdentifiedUser[0][0]))
 
 #################### Database retrieval #######################################
-    def getUsers(self, request = 100):
+    def getUsers(self, request = 0):
         """
             Summary: This will be used by the GUI to show the admin the current Users Table. Using the request amount method, this function will only
                 return a limited amount
@@ -170,11 +200,12 @@ class Database():
             Output: All entries in the user table <list of tuples>
         """
         # Here the SELECT has no ORDER BY since the users table is not dependent on times
-        self.cursor.execute("SELECT Users.UserName, Users.BluetoothID, Users.Access, Users.LivingStatus, Bedrooms.RoomName\
+        self.cursor.execute("SELECT Users.UserName, Users.BluetoothID, Users.Access, Bedrooms.RoomName\
             FROM Users\
             INNER JOIN Bedrooms\
             ON Bedrooms.RoomID = Users.RoomID;")
 
+        #TODO: add sql limits instead of doing loops
         # checks to see if the user has given a desired amount of entries to be returned
         if request != 0:
 
@@ -296,8 +327,33 @@ class Database():
         
         return(devices_per_room)
     
+#################### Database removal #########################################
+    def removeUser(self, _userName):
+        """
+            Summary: This is what will be called whenever a user is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Users WHERE UserName = ?;", (_userName,))
+        
+    def removeDevice(self, _deviceName):
+        """
+            Summary: This is what will be called whenever a device is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Devices WHERE DeviceName = ?;", (_deviceName,))
 
-##############################################################
+    def removeRoom(self, _roomName):
+        """
+            Summary: This is what will be called whenever a room is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Bedrooms WHERE UserName = ?;", (_roomName,))
+
+    def removeEntry(self, _entryTime):
+        """
+            Summary: This is what will be called whenever a picture is needed to be removed from the database
+        """
+        self.cursor.execute("DELETE FROM Pictures WHERE UserName = ?;", (_entryTime,))
+
+
+############################################################## Main Testing
 
 def main():
     """ This is used only for testing purposes"""
@@ -307,6 +363,9 @@ def main():
     # Database add check
     interface = Database()
     interface.connectToDatabase()
+
+    # Database removal check
+    interface.Destroy()
     interface.setupTables()
 
     #/////////////////////////////////////////////////////
@@ -314,6 +373,9 @@ def main():
     # Room add check
     interface.addRoom("Liam's Room")
     interface.addRoom("Isaac's Room")
+    interface.addRoom("Ryan's Room")
+    interface.addRoom("Izzy's Room")
+
 
     # Device add check
     interface.addDevice("Google Home", "Central Unit", "Medium", "Liam's Room")
@@ -322,8 +384,8 @@ def main():
     interface.addDevice("Philibs Light", "Lights room", "Low", "Isaac's Room")
 
     # User add Check
-    interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Admin", "Perminant", "Liam's Room")
-    interface.addUser("Isaac_Martienz", "12:34:56:78:90", "Normie", "Perminate", "Isaac's Room")
+    interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Liam's Room")
+    interface.addUser("Isaac_Martienz", "12:34:56:78:90", "Isaac's Room")
 
     # Pictures add check
     now = datetime.datetime.now()
@@ -349,8 +411,18 @@ def main():
     interface.getDevices("Liam's Room")
     interface.getDevices("Isaac's Room")
 
-    # Database removal check
-    # interface.Destroy()
+    #/////////////////////////////////////////////////////
+
+    # User delete test
+    # interface.removeUser("Liam_Nestelroad")
+    # interface.commitChanges()
+
+    # Table Counts
+    print(interface.countUsers())
+    print(interface.countDevices())
+    print(interface.countRooms())
+    print(interface.countPictures())
+
 
 if __name__ == "__main__":
     main()
