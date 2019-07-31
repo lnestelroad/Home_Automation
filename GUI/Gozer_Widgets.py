@@ -60,6 +60,8 @@ class ManageUsers(QWidget):
         self.add.setDisabled(True)
         self.add.clicked.connect(self.CreateUser)
 
+        self.clear.clicked.connect(self.ClearForm)
+
         submitUserButtonLayout.addWidget(self.add)
         submitUserButtonLayout.addWidget(self.clear)
 
@@ -96,6 +98,9 @@ class ManageUsers(QWidget):
         self.userTable = QTableWidget(userCount[0] + 1, 4, self)
         self.userTable.setHorizontalHeaderLabels(["User Name", "BluetoothID", "Bedroom", "Remove User"])
         
+        self.userTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode(1))
+        self.userTable.horizontalHeader().setSectionResizeMode(3 , QHeaderView.ResizeMode(2))
+
         self.populateTable()
 
         #//////////////////////////////////////////////////////////////////////////////// Main Layout Configuration
@@ -132,14 +137,17 @@ class ManageUsers(QWidget):
         self.populateTable()
 
         # Clears the form
-        self.FirstName.setText("")
-        self.lastName.setText("")
-        self.bluetooth.setText("")
+        self.ClearForm()
 
         # Creates a directory for the users pictures if they are not a guest
         # TODO: add path which is not a relative path
         # if access != "Guest":
         #     os.mkdir("../Facial_Recognition/dataset/{}".format(name))
+
+    def ClearForm(self):
+        self.FirstName.setText("")
+        self.lastName.setText("")
+        self.bluetooth.setText("")
 
     def RemoveUser(self):
         # Finds the exact row of the button pressed. Thank you Sam from StackOverFlow
@@ -190,10 +198,6 @@ class ManageUsers(QWidget):
             self.userTable.setCellWidget(i, 3, self.removeButton)
 
             self.removeButton.clicked.connect(self.RemoveUser)
-
-        # These are used to make sure the table is sized to fit all of the information
-        self.userTable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.userTable.resizeColumnsToContents()
 
 
 class ManageRooms(QWidget):
