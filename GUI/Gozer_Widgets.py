@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QDialog, QDialogButtonBox
 from PyQt5.QtCore import Qt
 import os
 import shutil
+import logging
 
 sys.path.append("../Database")
 from db_interface import Database
@@ -29,6 +30,7 @@ class ManageUsers(QWidget):
         self.db = Database()
         self.db.connectToDatabase()
 
+        # TODO: Change this from relative to absolute
         os.chdir("../Facial_Recognition/dataset")
         #//////////////////////////////////////////////////////////////////////////////// Form layout
         #TODO: add additional options for time frame when guest is selected
@@ -153,9 +155,12 @@ class ManageUsers(QWidget):
                 # Clears the form
                 self.ClearForm()
 
+                # Added user documented in log
+                logging.info("{} added to application".format(name))
+
             except OSError as error:
                 # An error dialog is brought up telling the user what went wrong
-                print("Could not create directory", error)
+                logging.warning("Could not create directory. Error:\n{}".format(error))
                 dlg = CustomDialogs("already_Exists", "{}".format(error))
                 dlg.exec_()
 
@@ -180,13 +185,16 @@ class ManageUsers(QWidget):
         self.db.removeUser(userName)
         self.db.commitChanges()
 
+        # Logs user removal
+        logging.info("{} removed from database".format(userName))
+
         # if user was perminate, their directory is removed
         path = "./{}".format(userName)
         
         try:
             os.rmdir(path)
         except OSError as error:
-            print("Could not remove dir", error)
+            logging.warning("Could not remove directory. Error:\n{}".format(error))
             dlg = CustomDialogs("error", "{}".format(error))
             dlg.exec_()
 
@@ -335,6 +343,7 @@ class Workspace(QWidget):
         super().__init__(*args, **kwargs)
 
         self.Menu = QListWidget()
+        logging.basicConfig(filename="GozerGUI.log", filemode="w", level=logging.INFO)
         
         self.Menu.insertItem(0, "Manage Users")
         self.Menu.insertItem(1, "Manage Rooms")
