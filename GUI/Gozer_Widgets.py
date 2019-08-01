@@ -4,6 +4,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QMessageBox
 from PyQt5.QtWidgets import QLineEdit, QSizePolicy, QComboBox, QLabel, QDockWidget, QTextEdit, QListWidget
 from PyQt5.QtWidgets import QStackedWidget, QFormLayout, QRadioButton, QProgressBar, QGridLayout, QTableWidget, QTableWidgetItem, QAbstractScrollArea, QHeaderView, QTableView
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox
 from PyQt5.QtCore import Qt
 import os
 import shutil
@@ -27,6 +28,8 @@ class ManageUsers(QWidget):
         
         self.db = Database()
         self.db.connectToDatabase()
+
+        os.chdir("../Facial_Recognition/dataset")
         #//////////////////////////////////////////////////////////////////////////////// Form layout
         #TODO: add additional options for time frame when guest is selected
 
@@ -134,21 +137,27 @@ class ManageUsers(QWidget):
         bluetooth = self.bluetooth.text()
         access = self.accessBox.currentText()
 
-        # Enters data information into the database
-        self.db.addUser(name, bluetooth, access)
-        self.db.commitChanges()
-
-        # Enters new data into table view
-        self.populateTable()
-
-        # Clears the form
-        self.ClearForm()
-
-        # Creates a directory for the users pictures if they are not a guest
         # TODO: add path which is not a relative path
         if access != "Guest":
-            os.chdir("../Facial_Recognition")
-            os.mkdir("{}".format(name))
+            try:
+                # Creates a directory for the users pictures if they are not a guest
+                os.mkdir("{}".format(name))
+
+                # Enters data information into the database
+                self.db.addUser(name, bluetooth, access)
+                self.db.commitChanges()
+
+                # Enters new data into table view
+                self.populateTable()
+
+                # Clears the form
+                self.ClearForm()
+
+            except OSError as error:
+                # An error dialog is brought up telling the user what went wrong
+                print("Could not create directory", error)
+                dlg = CustomDialogs("already_Exists", "{}".format(error))
+                dlg.exec_()
 
     def ClearForm(self):
         self.FirstName.setText("")
@@ -172,9 +181,14 @@ class ManageUsers(QWidget):
         self.db.commitChanges()
 
         # if user was perminate, their directory is removed
-        path = "../Facial_Recognition/dataset/{}".format(userName)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
+        path = "./{}".format(userName)
+        
+        try:
+            os.rmdir(path)
+        except OSError as error:
+            print("Could not remove dir", error)
+            dlg = CustomDialogs("error", "{}".format(error))
+            dlg.exec_()
 
     def populateTable(self):
         """
@@ -223,6 +237,10 @@ class ManageUsers(QWidget):
                 facial recognition directory
         """
         pass
+
+    def errorDialog(self):
+        pass
+
 
 class ManageRooms(QWidget):
     """
@@ -273,7 +291,42 @@ class SelfDestruct(QWidget):
         self.simpleText = QTextEdit("Self Destruct")
         self.layout.addWidget(self.simpleText)
         
+
+class CustomDialogs(QDialog):
+    """
+        Summary: Depending on the parameter given, this widget brings up a dialog window for 
+            the user. 
+        Input: An error message which should be given as a string and a dialog type
+            error - gives message for errors in removing users
+            already_Exists - gives error in 
+    """
+    def __init__(self, dialogType, errorMessage = "", *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Makes the button box for the dialog window
+        QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         
+        self.buttonBox = QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QVBoxLayout()
+
+        # # Determines what to show in the dialog box
+        if dialogType == "error":
+            self.setWindowTitle("Error Removing User")
+            self.msg = QLabel("Cannot Remove User")
+        
+        elif dialogType == "already_Exists":
+            self.setWindowTitle("Error Adding User")
+            self.msg = QLabel("User Already Exists")
+
+        self.error = QLabel(errorMessage)
+        self.layout.addWidget(self.error)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+
 class Workspace(QWidget):
     """
         Summary:
