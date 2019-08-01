@@ -4,3 +4,4 @@
 01-Aug-19 11:49:39 - WARNING -Could not create directory. Error:
 [Errno 17] File exists: 'test_user'
 01-Aug-19 11:49:47 - INFO -test_user removed from database
+01-Aug-19 12:52:51 - INFO -Admin Login
