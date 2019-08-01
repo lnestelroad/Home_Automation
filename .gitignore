@@ -1,2 +1,7 @@
-Gozer_database.db
+Database/Gozer_database.db
+GUI/GozerGUI.log
+GUI/__pycache__
+Database/__pycache__
+Facial_Recognition/encodings.pickle
+Facial_Recognition/__pycache__
 __pycache__
