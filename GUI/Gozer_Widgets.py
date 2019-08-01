@@ -160,7 +160,7 @@ class ManageUsers(QWidget):
 
             except OSError as error:
                 # An error dialog is brought up telling the user what went wrong
-                logging.warning("Could not create directory. Error:\n{}".format(error))
+                logging.warning("Could not create directory. \n\tError:\n\t{}".format(error))
                 dlg = CustomDialogs("already_Exists", "{}".format(error))
                 dlg.exec_()
 
@@ -194,7 +194,7 @@ class ManageUsers(QWidget):
         try:
             os.rmdir(path)
         except OSError as error:
-            logging.warning("Could not remove directory. Error:\n{}".format(error))
+            logging.warning("Could not remove directory. \n\tError:\n\t{}".format(error))
             dlg = CustomDialogs("error", "{}".format(error))
             dlg.exec_()
 
@@ -337,14 +337,18 @@ class CustomDialogs(QDialog):
 
 class Workspace(QWidget):
     """
-        Summary:
+        Summary: Here is where the whole app is layed out. Everything from the menu bar to the
+            working space. it all comes together here
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Initiates logging module
+        logging.basicConfig(filename="GozerGUI.log", filemode="a", level=logging.INFO, format='%(asctime)s - %(levelname)s -%(message)s', datefmt='%d-%b-%y %H:%M:%S')
+        logging.info("Admin Login")
+
         self.Menu = QListWidget()
-        logging.basicConfig(filename="GozerGUI.log", filemode="w", level=logging.INFO)
-        
+          
         self.Menu.insertItem(0, "Manage Users")
         self.Menu.insertItem(1, "Manage Rooms")
         self.Menu.insertItem(2, "Logs")
