@@ -190,6 +190,7 @@ class ManageUsers(QWidget):
         logging.info("{} removed from database".format(userName))
 
         # if user was perminate, their directory is removed
+        os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset")
         path = "./{}".format(userName)
         
         try:
@@ -233,41 +234,47 @@ class ManageUsers(QWidget):
             Summary: This will have python open a camera module and take a picture of the user. Once the picture is
                 taken, it will be saved in the users designated directory in the facial recognition site.
         """
-        import cv2
+        # TODO: fix this shit dawg
+        userName = self.FirstName.text() + "_" + self.lastName.text()
+        os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset/{}".format(userName))
+        try:
+            cam = cv2.VideoCapture(0)
 
-        cam = cv2.VideoCapture(0)
+            cv2.namedWindow("test")
 
-        cv2.namedWindow("test")
+            img_counter = 0
 
-        img_counter = 0
+            while True:
+                ret, frame = cam.read()
+                cv2.imshow("test", frame)
+                if not ret:
+                    break
+                k = cv2.waitKey(1)
 
-        while True:
-            ret, frame = cam.read()
-            cv2.imshow("test", frame)
-            if not ret:
-                break
-            k = cv2.waitKey(1)
+                if k%256 == 27:
+                    # ESC pressed
+                    print("Escape hit, closing...")
+                    break
+                elif k%256 == 32:
+                    # SPACE pressed
+                    img_name = "{}{}.png".format(userName, img_counter)
+                    cv2.imwrite(img_name, frame)
+                    print("{} written!".format(img_name))
+                    img_counter += 1
 
-            if k%256 == 27:
-                # ESC pressed
-                print("Escape hit, closing...")
-                break
-            elif k%256 == 32:
-                # SPACE pressed
-                img_name = "opencv_frame_{}.png".format(img_counter)
-                cv2.imwrite(img_name, frame)
-                print("{} written!".format(img_name))
-                img_counter += 1
+            cam.release()
 
-        cam.release()
+            cv2.destroyAllWindows()
 
-        cv2.destroyAllWindows()
+            files = len([name for name in os.listdir('.') if os.path.isfile(name)])
+            self.progress.setValue(self.progress.value() + 5 * files)
 
-        self.progress.setValue(self.progress.value() + 5)
-
-        if self.progress.value() == 100:
-            self.submit.setEnabled(True)
-
+            if self.progress.value() == 100:
+                self.submit.setEnabled(True)
+        except Exception as e:
+            logging.warning("No Camera Found")
+            dlg = CustomDialogs("camera", "{}".format(e))
+            dlg.exec_()
 
     def encodeFace(self):
         """
@@ -358,6 +365,10 @@ class CustomDialogs(QDialog):
         elif dialogType == "already_Exists":
             self.setWindowTitle("Error Adding User")
             self.msg = QLabel("User Already Exists")
+
+        elif dialogType == "camera":
+            self.setWindowTitle("Camera Error")
+            self.msg = QLabel("No camera module connected")
 
         self.error = QLabel(errorMessage)
         self.layout.addWidget(self.error)

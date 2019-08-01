@@ -5,3 +5,23 @@
 [Errno 17] File exists: 'test_user'
 01-Aug-19 11:49:47 - INFO -test_user removed from database
 01-Aug-19 12:52:51 - INFO -Admin Login
+01-Aug-19 12:54:54 - INFO -Admin Login
+01-Aug-19 12:55:47 - INFO -Admin Login
+01-Aug-19 14:36:54 - INFO -Admin Login
+01-Aug-19 14:37:46 - INFO -Admin Login
+01-Aug-19 14:40:50 - INFO -Admin Login
+01-Aug-19 15:07:45 - INFO -Admin Login
+01-Aug-19 15:07:55 - WARNING -No Camera Found
+01-Aug-19 15:08:33 - INFO -Admin Login
+01-Aug-19 15:09:35 - INFO -Liam_Nestelroad added to application
+01-Aug-19 15:09:59 - INFO -Liam_Nestelroad removed from database
+01-Aug-19 15:10:54 - INFO -Admin Login
+01-Aug-19 15:12:58 - INFO -Admin Login
+01-Aug-19 15:13:29 - INFO -Liam_Nestelroad added to application
+01-Aug-19 15:19:36 - INFO -Admin Login
+01-Aug-19 15:21:18 - INFO -Liam_Nestelroad removed from database
+01-Aug-19 15:21:18 - WARNING -Could not remove directory. 
+	Error:
+	[Errno 2] No such file or directory: './Liam_Nestelroad'
+01-Aug-19 15:28:12 - INFO -Admin Login
+01-Aug-19 15:28:45 - INFO -Liam_Nestelroad added to application
