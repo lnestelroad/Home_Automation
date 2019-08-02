@@ -281,7 +281,7 @@ class ManageUsers(QWidget):
             Summary: Once enough pictures have been uploaded, this will kick off the encode_faces.py script in the
                 facial recognition directory
         """
-        pass
+        
 
     def errorDialog(self):
         pass
