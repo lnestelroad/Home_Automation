@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QMessageBox
 from PyQt5.QtWidgets import QLineEdit, QSizePolicy, QComboBox, QLabel, QDockWidget, QTextEdit, QListWidget
 from PyQt5.QtWidgets import QStackedWidget, QFormLayout, QRadioButton, QProgressBar, QGridLayout, QTableWidget, QTableWidgetItem, QAbstractScrollArea, QHeaderView, QTableView
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QTreeWidget, QTreeWidgetItem
 from PyQt5.QtCore import Qt
 import os
 import shutil
@@ -33,7 +33,7 @@ class ManageUsers(QWidget):
 
         # TODO: Change this from relative to absolute
         os.chdir("../Facial_Recognition/dataset")
-        #//////////////////////////////////////////////////////////////////////////////// Form layout
+     #//////////////////////////////////////////////////////////////////////////////// Form layout
         #TODO: add additional options for time frame when guest is selected
 
         # Widget for the access combo box
@@ -66,11 +66,15 @@ class ManageUsers(QWidget):
 
         self.add = QPushButton("Add User")
         self.clear = QPushButton("Clear Form")
+        self.edit = QPushButton("Change")
 
         self.add.setDisabled(True)
         self.add.clicked.connect(self.CreateUser)
 
         self.clear.clicked.connect(self.ClearForm)
+
+        self.edit.setDisabled(True)
+        # self.edit.clicked.connect(self.Modify)
 
         submitUserButtonLayout.addWidget(self.add)
         submitUserButtonLayout.addWidget(self.clear)
@@ -78,7 +82,7 @@ class ManageUsers(QWidget):
         addUsersLayout.addLayout(self.form, 0, 0)
         addUsersLayout.addLayout(submitUserButtonLayout, 1, 0)
 
-        #//////////////////////////////////////////////////////////////////////////////// Progress bar layout
+     #//////////////////////////////////////////////////////////////////////////////// Progress bar layout
         SubmitLayout = QVBoxLayout()
         buttonLayout = QHBoxLayout()
 
@@ -100,7 +104,7 @@ class ManageUsers(QWidget):
 
         addUsersLayout.addLayout(SubmitLayout, 0, 1 )
 
-        #//////////////////////////////////////////////////////////////////////////////// Table Layout
+     #//////////////////////////////////////////////////////////////////////////////// Table Layout
         # Here are all of Database interface functions needed to get the user information
         #TODO: code unpacking
         userCount = self.db.countUsers()
@@ -114,7 +118,7 @@ class ManageUsers(QWidget):
 
         self.populateTable()
 
-        #//////////////////////////////////////////////////////////////////////////////// Main Layout Configuration
+     #//////////////////////////////////////////////////////////////////////////////// Main Layout Configuration
         widgetTitle = QLabel("Manage Users")
         widgetTitle.setAlignment(Qt.AlignCenter)
 
@@ -228,6 +232,30 @@ class ManageUsers(QWidget):
             self.userTable.setCellWidget(i, 3, self.removeButton)
 
             self.removeButton.clicked.connect(self.RemoveUser)
+        
+        # Allows double clicking on rows for editing
+        self.userTable.setEditTriggers( QTableWidget.NoEditTriggers)
+
+        # Connects a double click to an edit menu
+        self.userTable.itemDoubleClicked.connect(self.editItem)
+        
+    def setProgressBar(self, userName):
+        """
+            Summary: This is used to set the state of the progess bar for any given user
+        """
+        os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset/{}".format(userName))
+        files = len([name for name in os.listdir('.') if os.path.isfile(name)])
+        print(files)
+        print(userName)
+        
+        progressValue = 5 * files
+
+        if progressValue >= 100:
+            self.submit.setEnabled(True)
+            self.progress.setValue(100)
+
+        else:
+            self.progress.setValue(progressValue)
 
     def uploadPicutes(self):
         """
@@ -266,11 +294,8 @@ class ManageUsers(QWidget):
 
             cv2.destroyAllWindows()
 
-            files = len([name for name in os.listdir('.') if os.path.isfile(name)])
-            self.progress.setValue(self.progress.value() + 5 * files)
+            self.setProgressBar(userName)
 
-            if self.progress.value() == 100:
-                self.submit.setEnabled(True)
         except Exception as e:
             logging.warning("No Camera Found")
             dlg = CustomDialogs("camera", "{}".format(e))
@@ -281,10 +306,21 @@ class ManageUsers(QWidget):
             Summary: Once enough pictures have been uploaded, this will kick off the encode_faces.py script in the
                 facial recognition directory
         """
-        
 
-    def errorDialog(self):
-        pass
+    def editItem(self, item):
+        userRow = item.row()
+
+        # Splits the users name into first and last
+        name = self.userTable.item(userRow, 0).text().split("_")
+
+        # Sets the Add user table to all of the
+        self.FirstName.setText(name[0])
+        self.lastName.setText(name[1])
+        self.bluetooth.setText(self.userTable.item(userRow, 1).text())
+
+        self.setProgressBar(self.userTable.item(userRow, 0).text())
+        self.add.setDisabled(True)
+        self.edit.setEnable(True)
 
 
 class ManageRooms(QWidget):
@@ -296,9 +332,31 @@ class ManageRooms(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.layout = QHBoxLayout(self)
-        self.simpleText = QLabel("Manages Rooms")
-        self.layout.addWidget(self.simpleText)
+        # Connects the application to the database
+        self.db = Database()
+        self.db.connectToDatabase()
+
+        # Initiates a layout and a tree widget
+        self.layout = QVBoxLayout(self)
+        self.roomTree = QTreeWidget()
+        self.roomTree.setHeaderLabel("Bedrooms")
+
+        # retrieves the room count and the room names
+        roomCount = self.db.countRooms()
+        rooms = self.db.getRooms()
+
+        # Adds all of the rooms to the tree widget
+        for roomIndex in range(0, roomCount[0]):
+            parent = QTreeWidgetItem(self.roomTree)
+            parent.setText(0, rooms[roomIndex][0])
+
+            # Adds all of the devices to each room widget
+            for x in range(0, 5):
+                child = QTreeWidgetItem(parent)
+                child.setText(0, "Child {}".format(x))
+
+        
+        self.layout.addWidget(self.roomTree)
 
 
 class Logs(QWidget):
@@ -414,3 +472,4 @@ class Workspace(QWidget):
 
     def display(self, index):
         self.Stack.setCurrentIndex(index)
+
