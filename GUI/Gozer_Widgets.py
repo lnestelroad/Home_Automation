@@ -319,7 +319,7 @@ class ManageUsers(QWidget):
 
         self.setProgressBar(self.userTable.item(userRow, 0).text())
         self.add.setDisabled(True)
-        self.edit.setEnable(True)
+        # self.edit.setEnable(True)
 
 
 class ManageRooms(QWidget):
@@ -349,14 +349,43 @@ class ManageRooms(QWidget):
             parent = QTreeWidgetItem(self.roomTree)
             parent.setText(0, rooms[roomIndex][0])
 
-            # Adds all of the devices to each room widget
-            for x in range(0, 5):
-                child = QTreeWidgetItem(parent)
-                child.setText(0, "Child {}".format(x))
+            # Makes a special Table for each rooms
+            child = QTreeWidgetItem(parent)
+            self.deviceTable = QTableWidget(self.db.countDevices()[0], 4, self)
+            self.deviceTable.setHorizontalHeaderLabels(["Name", "Purpose", "Importance", "Remove"])
 
+            self.deviceTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode(1))
+            self.deviceTable.horizontalHeader().setSectionResizeMode(3 , QHeaderView.ResizeMode(2))
+
+            self.populateTable(rooms[roomIndex][0])
+
+            self.roomTree.setItemWidget(child, 0, self.deviceTable)
         
         self.layout.addWidget(self.roomTree)
 
+    def populateTable(self, room):
+        """
+        """
+        # Gets all of the device information from the database
+        devices = self.db.getDevices(room)
+        deviceCount = len(devices)
+
+        for deviceIndex in range(0, deviceCount):
+            deviceName = QTableWidgetItem("{}".format(devices[deviceIndex][0]))
+            devicePurpose = QTableWidgetItem("{}".format(devices[deviceIndex][1]))
+            deviceImportance = QTableWidgetItem("{}".format(devices[deviceIndex][2]))
+            self.removeButton = QPushButton("Remove")
+
+            self.deviceTable.setItem(deviceIndex, 0, deviceName)
+            self.deviceTable.setItem(deviceIndex, 1, devicePurpose)
+            self.deviceTable.setItem(deviceIndex, 2, deviceImportance)
+            self.deviceTable.setCellWidget(deviceIndex, 3, self.removeButton)
+
+            self.removeButton.clicked.connect(self.removeDevice)
+
+    def removeDevice(self):
+        print("It's working. IT'S WORKING!!!!")
+            
 
 class Logs(QWidget):
     """
