@@ -331,6 +331,10 @@ class ManageRooms(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # TODO: Fix table so that it only has entries for how many devices are in each room
+        # TODO: Make add and remove device functions.
+        # TODO: Add function to count devices based on room in db_interface
+
         # Connects the application to the database
         self.db = Database()
         self.db.connectToDatabase()
@@ -354,22 +358,29 @@ class ManageRooms(QWidget):
             self.deviceTable = QTableWidget(self.db.countDevices()[0], 4, self)
             self.deviceTable.setHorizontalHeaderLabels(["Name", "Purpose", "Importance", "Remove"])
 
+            # Formats the table to fill up all avaliable space
             self.deviceTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode(1))
             self.deviceTable.horizontalHeader().setSectionResizeMode(3 , QHeaderView.ResizeMode(2))
 
             self.populateTable(rooms[roomIndex][0])
 
+            # Adds each table to its respective table widget
             self.roomTree.setItemWidget(child, 0, self.deviceTable)
         
+        # Adds the dock widget to the main layout for the manage room plane
         self.layout.addWidget(self.roomTree)
 
     def populateTable(self, room):
         """
+            Summary: Since this table will be updated regularly via adding and removing
+                devices, it is given its own function which first destroys the table then
+                rebuilds it from the top
         """
         # Gets all of the device information from the database
         devices = self.db.getDevices(room)
         deviceCount = len(devices)
 
+        # Here is where all of the information is unpacked and inserted into the table
         for deviceIndex in range(0, deviceCount):
             deviceName = QTableWidgetItem("{}".format(devices[deviceIndex][0]))
             devicePurpose = QTableWidgetItem("{}".format(devices[deviceIndex][1]))
@@ -395,9 +406,31 @@ class Logs(QWidget):
         super().__init__(*args, **kwargs)
 
         self.layout = QHBoxLayout(self)
-        self.simpleText = QLineEdit("Logs")
-        self.layout.addWidget(self.simpleText)
 
+        # connects to the database
+        self.db = Database()
+        self.db.connectToDatabase()
+
+        self.logsTable = QTableWidget(5 ,4)
+        self.logsTable.setHorizontalHeaderLabels(["Date", "Location", "Respone", "User"])
+        self.populateTable()
+
+        # Formats the table to fill up all avaliable space
+        self.logsTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode(1))
+        
+
+        self.layout.addWidget(self.logsTable)
+
+    def populateTable(self, request=0):
+        """
+            Summary: This table is really only built once but its good to keep convention
+        """
+        # Gets all of the log information from the database
+        entries = self.db.getEntry()
+
+        for entryIndex in range(0, len(entries)):
+            date = entries[entryIndex][0]
+            print(date)
 
 class Diagnostics(QWidget):
     """
