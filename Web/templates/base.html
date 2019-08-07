@@ -2,9 +2,19 @@
 <html>
     <head>
         <title>Gozer Website Interface</title>
-        <link rel="icon" href="https://ghostbusters.fandom.com/wiki/Zuul?file=ZuulTerrorDog1.png">
+        <link rel="stylesheet" type="text/css" href="../static/styles/base.css">
     </head>
     <body>
-        <h1>Gozer</h1>
+        <div class="Header">Gozer</div>
+        <!-- Side navigation -->
+        <div class="sidenav">
+            <a href="/open">Open Door</a>
+            <a href="/lock">Lock Door</a>
+            <a href="/who">Who's Home</a>
+            <a href="/see">See Front Door</a>
+            <a href="/vacation">Vacation Mode</a>
+        </div>
+  
+        {% block workplane %}{% endblock %}
     </body>
 </html>
