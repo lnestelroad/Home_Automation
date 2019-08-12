@@ -1,0 +1,39 @@
+12-Aug-19 12:00:01 - INFO - * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+12-Aug-19 12:00:01 - INFO - * Restarting with stat
+12-Aug-19 12:00:01 - WARNING - * Debugger is active!
+12-Aug-19 12:00:01 - INFO - * Debugger PIN: 138-622-692
+12-Aug-19 12:00:20 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:20] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:20 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:20] "GET /static/styles/base.css HTTP/1.1" 304 -
+12-Aug-19 12:00:24 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:24] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:24 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:24] "GET /static/styles/base.css HTTP/1.1" 304 -
+12-Aug-19 12:00:26 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:26] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:27 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:27] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:28 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:28] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:29 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:29] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:29 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:29] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:30 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:30] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:31 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:31] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:32 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:32] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:32 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:32] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:32 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:32] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:32 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:32] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:32 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:32] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:33 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:33] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:33 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:33] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:33 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:33] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:00:33 - INFO -127.0.0.1 - - [12/Aug/2019 12:00:33] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:01:16 - INFO - * Detected change in '/home/liam_work/Documents/Home_Automation/Web/Gozer_Web_run.py', reloading
+12-Aug-19 12:01:16 - INFO - * Restarting with stat
+12-Aug-19 12:01:16 - WARNING - * Debugger is active!
+12-Aug-19 12:01:16 - INFO - * Debugger PIN: 138-622-692
+12-Aug-19 12:01:21 - INFO -127.0.0.1 - - [12/Aug/2019 12:01:21] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:01:21 - INFO -127.0.0.1 - - [12/Aug/2019 12:01:21] "GET /static/styles/base.css HTTP/1.1" 304 -
+12-Aug-19 12:02:21 - INFO - * Detected change in '/home/liam_work/Documents/Home_Automation/Web/Gozer_Web_run.py', reloading
+12-Aug-19 12:02:21 - INFO - * Restarting with stat
+12-Aug-19 12:02:36 - INFO - * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+12-Aug-19 12:02:36 - INFO - * Restarting with stat
+12-Aug-19 12:02:36 - WARNING - * Debugger is active!
+12-Aug-19 12:02:36 - INFO - * Debugger PIN: 138-622-692
+12-Aug-19 12:02:59 - INFO -127.0.0.1 - - [12/Aug/2019 12:02:59] "POST /onButtonClick/ HTTP/1.1" 200 -
+12-Aug-19 12:03:21 - INFO - * Detected change in '/home/liam_work/Documents/Home_Automation/Web/Gozer_Web_run.py', reloading
+12-Aug-19 12:03:21 - INFO - * Restarting with stat

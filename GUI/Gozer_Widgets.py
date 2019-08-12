@@ -505,7 +505,7 @@ class Workspace(QWidget):
         super().__init__(*args, **kwargs)
 
         # Initiates logging module
-        logging.basicConfig(filename="GozerGUI.log", filemode="a", level=logging.INFO, format='%(asctime)s - %(levelname)s -%(message)s', datefmt='%d-%b-%y %H:%M:%S')
+        logging.basicConfig(filename="../GozerLogs/GozerGUI.log", filemode="a", level=logging.INFO, format='%(asctime)s - %(levelname)s -%(message)s', datefmt='%d-%b-%y %H:%M:%S')
         logging.info("Admin Login")
 
         self.Menu = QListWidget()

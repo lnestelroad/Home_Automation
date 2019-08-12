@@ -6,15 +6,24 @@
     </head>
     <body>
         <div class="Header">Gozer</div>
-        <!-- Side navigation -->
-        <div class="sidenav">
-            <a href="/open">Open Door</a>
-            <a href="/lock">Lock Door</a>
-            <a href="/who">Who's Home</a>
-            <a href="/see">See Front Door</a>
-            <a href="/vacation">Vacation Mode</a>
-        </div>
-  
-        {% block workplane %}{% endblock %}
+        <hr> <!--Adds a horizontal line under the header-->
+
+        <!--Here is where all of the buttons for controlling the house will go-->
+        <form action="/onButtonClick/" method="post">
+            <div class="button-container">
+                
+                <input type="submit" name="submit_button" value="Open Front Door">
+                <input type="submit" name="submit_button" value="Lock Front Door">
+
+                <input type="submit" name="submit_button" value="Open Garage Door">
+                <input type="submit" name="submit_button" value="Close Garage Door">
+
+                <input type="submit" name="submit_button" value="Open Blinds">
+                <input type="submit" name="submit_button" value="Close Blinds">
+            </div>    
+        </form>
+
+        {% block workplane %}
+        {% endblock %}
     </body>
 </html>
