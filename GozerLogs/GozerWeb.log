@@ -37,3 +37,6 @@
 12-Aug-19 12:02:59 - INFO -127.0.0.1 - - [12/Aug/2019 12:02:59] "POST /onButtonClick/ HTTP/1.1" 200 -
 12-Aug-19 12:03:21 - INFO - * Detected change in '/home/liam_work/Documents/Home_Automation/Web/Gozer_Web_run.py', reloading
 12-Aug-19 12:03:21 - INFO - * Restarting with stat
+12-Aug-19 13:34:48 - INFO - * Restarting with stat
+12-Aug-19 13:34:56 - INFO - * Restarting with stat
+12-Aug-19 13:35:01 - INFO - * Restarting with stat

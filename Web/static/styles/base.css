@@ -3,7 +3,57 @@
   font-size: 250%
 }
 
+/*#############################################*/
+.cameraFeed {
+  float: left;
+  margin-left: 10%
+}
+
+.cameraDpad {
+  position: relative;
+}
+
+.top > input {
+  width: 100px;
+  height: 50px;
+  float: center;
+  background: lightgray;
+  margin: 3px;
+  margin-left: 114px;
+}
+
+.bottom > input {
+  width: 100px;
+  height: 50px;
+  float: center;
+  background: lightgray;
+  margin: 3px;
+  margin-left: 114px;
+}
+
+.rightAndLeft > input {
+  width: 100px;
+  height: 50px;
+  float: center;
+  background: lightgray;
+  margin: 3px;
+}
+
+/*#############################################*/
+.outer {
+  position: relative;
+  float: right;
+  margin-right: 10%;
+}
+
 .button-container {
+  width: 465px;
+  background: gray;
+  overflow-y: auto;
+}
+
+.lighting-container {
+  margin-top: 10px;
   width: 465px;
   background: gray;
   overflow-y: auto;
@@ -16,3 +66,20 @@
   background: lightgray;   
   margin: 15px;
 }
+
+.lighting-container > input {
+  width: 100px;
+  height: 50px;
+  float: center;
+  background: lightgray;
+  margin: 15px;
+}
+
+.lighting-container > select {
+  margin-left: 10px;
+}
+
+.button-container > h2, .lighting-container > h2 {
+  margin-left: 35%;
+}
+/*#############################################*/

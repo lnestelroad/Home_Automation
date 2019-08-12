@@ -3,25 +3,66 @@
     <head>
         <title>Gozer Website Interface</title>
         <link rel="stylesheet" type="text/css" href="../static/styles/base.css">
+        <meta charset="UTF-8">
     </head>
     <body>
         <div class="Header">Gozer</div>
         <hr> <!--Adds a horizontal line under the header-->
 
-        <!--Here is where all of the buttons for controlling the house will go-->
-        <form action="/onButtonClick/" method="post">
-            <div class="button-container">
-                
-                <input type="submit" name="submit_button" value="Open Front Door">
-                <input type="submit" name="submit_button" value="Lock Front Door">
+        <div class="cameraFeed">
+            <h2>Camera Feed</h2>
 
-                <input type="submit" name="submit_button" value="Open Garage Door">
-                <input type="submit" name="submit_button" value="Close Garage Door">
+            <img src="{{ url_for('video_feed') }}" width="110%">
 
-                <input type="submit" name="submit_button" value="Open Blinds">
-                <input type="submit" name="submit_button" value="Close Blinds">
-            </div>    
-        </form>
+            <!-- This is where the camera Dpad is setup -->
+            <form action="/cameraMovement/" method="post">
+                <div class="cameraDpad">
+                    <div class="top"><input type="submit" name="up" value="Up"></div>
+                    <div class="rightAndLeft">
+                        <input type="submit" name="left" value="Left">
+                        <input type="submit" name="spacer" value="">
+                        <input type="submit" name="right" value="Right">
+                    </div>
+                    <div class="bottom"><input type="submit" name="down" value="Down"></div>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="outer">
+            <!--Here is where all of the buttons for controlling the house will go-->
+            <form action="/onButtonClick/" method="post">
+                <div class="button-container">
+                    <h2>Controls</h2>
+                    
+                    <input type="submit" name="submit_button" value="Open Front Door">
+                    <input type="submit" name="submit_button" value="Lock Front Door">
+
+                    <input type="submit" name="submit_button" value="Open Garage Door">
+                    <input type="submit" name="submit_button" value="Close Garage Door">
+
+                    <input type="submit" name="submit_button" value="Open Blinds">
+                    <input type="submit" name="submit_button" value="Close Blinds">
+
+                    <input type="submit" name="submit_button" value="Vacation">
+                </div>    
+            </form>
+
+            <form action="/lighting/" method="post">
+                <div class="lighting-container">
+                    <h2>Light Controls</h2>
+
+                    <select name="Room">
+                        {% for room in rooms %}
+                        <option value="{{ room }}">{{ room }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="submit" name="submit_button" value="Lights On">
+                    <input type="submit" name="submit_button" value="Lights Off">
+                </div>
+            </form>
+        </div>
 
         {% block workplane %}
         {% endblock %}
