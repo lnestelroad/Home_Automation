@@ -402,7 +402,7 @@ def main():
     interface.getUsers()
 
     interface.getEntry(1)
-    interface.getEntry()
+    print(interface.getEntry())
 
     # Room retrieval check
     interface.getRooms()
