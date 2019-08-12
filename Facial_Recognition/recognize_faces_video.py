@@ -1,11 +1,21 @@
+#!/usr/bin/env python3
+
+################################## Comand to run #######################################
+# python3 recognize_faces_video.py --encodings encodings.pickle \
+#        --output output/webcam_face_recognition_output.avi --display 1 -mH 2 -mW 2
+################################## Comand to run #######################################
+
 
 # import the necessary packages
-from imutils.video import VideoStream
+from imutils import build_montages
 import face_recognition
 import argparse
 import imutils
 import pickle
 import time
+from datetime import datetime
+import numpy as np
+import imagezmq.imagezmq.imagezmq as imagezmq
 import cv2
  
 # construct the argument parser and parse the arguments
@@ -18,6 +28,10 @@ ap.add_argument("-y", "--display", type=int, default=1,
 	help="whether or not to display output frame to screen")
 ap.add_argument("-d", "--detection-method", type=str, default="hog",
 	help="face detection model to use: either `hog` or `cnn`")
+ap.add_argument("-mW", "--montageW", required=True, type=int,
+	help="montage frame width")
+ap.add_argument("-mH", "--montageH", required=True, type=int,
+	help="montage frame height")
 args = vars(ap.parse_args())
 
 # load the known faces and embeddings
@@ -27,20 +41,33 @@ data = pickle.loads(open(args["encodings"], "rb").read())
 # initialize the video stream and pointer to output video file, then
 # allow the camera sensor to warm up
 print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+# initialize the ImageHub object
+imageHub = imagezmq.ImageHub()
 writer = None
-time.sleep(2.0)
+frameDict = {}
+mW = args["montageW"]
+mH = args["montageH"]
+
 
 # loop over frames from the video file stream
 while True:
-	# grab the frame from the threaded video stream
-	frame = vs.read()
+	# receive RPi name and frame from the RPi and acknowledge
+	# the receipt
+	(rpiName, frame) = imageHub.recv_image()
+	imageHub.send_reply(b'OK')
+
+	# update the new frame in the frame dictionary
+	frameDict[rpiName] = frame
+
+	# resize the frame to have a maximum width of 400 pixels, then
+	# grab the frame dimensions and construct a blob
 	
 	# convert the input frame from BGR to RGB then resize it to have
 	# a width of 750px (to speedup processing)
 	rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-	rgb = imutils.resize(frame, width=750)
+	rgb = imutils.resize(frame, width=400)
 	r = frame.shape[1] / float(rgb.shape[1])
+	(h, w) = rgb.shape[:2]
  
 	# detect the (x, y)-coordinates of the bounding boxes
 	# corresponding to each face in the input frame, then compute
@@ -80,6 +107,14 @@ while True:
 		# update the list of names
 		names.append(name)
 
+	#################################### PLACE REACTION CODE HERE ###################################################
+
+	if "DO_NOT_REMOVE" in names:
+		# time.sleep(10)
+		print("success")
+
+	#################################################################################################################
+
     # loop over the recognized faces
 	for ((top, right, bottom, left), name) in zip(boxes, names):
 		# rescale the face coordinates
@@ -110,7 +145,14 @@ while True:
     # check to see if we are supposed to display the output frame to
 	# the screen
 	if args["display"] > 0:
-		cv2.imshow("Frame", frame)
+		# build a montage using images in the frame dictionary
+		montages = build_montages(frameDict.values(), (w, h), (mW, mH))
+ 
+		# display the montage(s) on the screen
+		for (i, montage) in enumerate(montages):
+			# montage = imutils.rotate(montage, angle=90)
+			cv2.imshow("Camera Feed", montage)
+
 		key = cv2.waitKey(1) & 0xFF
  
 		# if the `q` key was pressed, break from the loop
@@ -119,8 +161,8 @@ while True:
 
 # do a bit of cleanup
 cv2.destroyAllWindows()
-vs.stop()
- 
+
 # check to see if the video writer point needs to be released
 if writer is not None:
 	writer.release()
+ 
