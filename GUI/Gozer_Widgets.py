@@ -74,9 +74,10 @@ class ManageUsers(QWidget):
         self.clear.clicked.connect(self.ClearForm)
 
         self.edit.setDisabled(True)
-        # self.edit.clicked.connect(self.Modify)
+        self.edit.clicked.connect(self.Modify)
 
         submitUserButtonLayout.addWidget(self.add)
+        submitUserButtonLayout.addWidget(self.edit)
         submitUserButtonLayout.addWidget(self.clear)
 
         addUsersLayout.addLayout(self.form, 0, 0)
@@ -108,7 +109,7 @@ class ManageUsers(QWidget):
         # Here are all of Database interface functions needed to get the user information
         #TODO: code unpacking
         userCount = self.db.countUsers()
-        print(userCount)
+        
         # Creates empty table widget with headers
         self.userTable = QTableWidget(userCount[0] + 1, 4, self)
         self.userTable.setHorizontalHeaderLabels(["User Name", "BluetoothID", "Bedroom", "Remove User"])
@@ -144,6 +145,8 @@ class ManageUsers(QWidget):
         bluetooth = self.bluetooth.text()
         access = self.accessBox.currentText()
 
+        os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset")
+
         # TODO: add path which is not a relative path
         if access != "Guest":
             try:
@@ -168,13 +171,19 @@ class ManageUsers(QWidget):
                 logging.warning("Could not create directory. \n\tError:\n\t{}".format(error))
                 dlg = CustomDialogs("already_Exists", "{}".format(error))
                 dlg.exec_()
+        else:
+            #TODO: add guest users
+            print("adding guest user")
 
     def ClearForm(self):
         self.FirstName.setText("")
         self.lastName.setText("")
         self.bluetooth.setText("")
 
+        self.setProgressBar("")
+
     def RemoveUser(self):
+        #TODO: add function to remove user from face encoding
         # Finds the exact row of the button pressed. Thank you Sam from StackOverFlow
         buttonClicked = self.sender()
         index = self.userTable.indexAt(buttonClicked.pos())
@@ -243,19 +252,23 @@ class ManageUsers(QWidget):
         """
             Summary: This is used to set the state of the progess bar for any given user
         """
-        os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset/{}".format(userName))
-        files = len([name for name in os.listdir('.') if os.path.isfile(name)])
-        print(files)
-        print(userName)
+        if userName == "":
+            self.progress.setValue(0)
         
-        progressValue = 5 * files
-
-        if progressValue >= 100:
-            self.submit.setEnabled(True)
-            self.progress.setValue(100)
-
         else:
-            self.progress.setValue(progressValue)
+            os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset/{}".format(userName))
+            files = len([name for name in os.listdir('.') if os.path.isfile(name)])
+            print(files)
+            print(userName)
+            
+            progressValue = 5 * files
+
+            if progressValue >= 100:
+                self.submit.setEnabled(True)
+                self.progress.setValue(100)
+
+            else:
+                self.progress.setValue(progressValue)
 
     def uploadPicutes(self):
         """
@@ -320,7 +333,14 @@ class ManageUsers(QWidget):
 
         self.setProgressBar(self.userTable.item(userRow, 0).text())
         self.add.setDisabled(True)
-        # self.edit.setEnable(True)
+        self.edit.setDisabled(False)
+
+    def Modify(self):
+        #TODO: Finish this
+        """
+            Summary: This is the function that will push the changes to the user into the database
+        """
+        print("modify works")
 
 
 class ManageRooms(QWidget):
@@ -356,20 +376,32 @@ class ManageRooms(QWidget):
 
             # Makes a special Table for each rooms
             child = QTreeWidgetItem(parent)
-            self.deviceTable = QTableWidget(self.db.countDevices()[0], 4, self)
-            self.deviceTable.setHorizontalHeaderLabels(["Name", "Purpose", "Importance", "Remove"])
+            self.deviceTable = QTableWidget(self.db.countDevices()[0], 3, self)
+            self.deviceTable.setHorizontalHeaderLabels(["Name", "Purpose", "Importance"])
 
             # Formats the table to fill up all avaliable space
             self.deviceTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode(1))
-            self.deviceTable.horizontalHeader().setSectionResizeMode(3 , QHeaderView.ResizeMode(2))
 
+            # Populates the table
             self.populateTable(rooms[roomIndex][0])
 
             # Adds each table to its respective table widget
             self.roomTree.setItemWidget(child, 0, self.deviceTable)
+
+        self.buttonLayout = QHBoxLayout()
+        self.addDevice = QPushButton("Add Device")
+        self.removeButton = QPushButton("Remove Device")
+
+        self.buttonLayout.addWidget(self.addDevice)
+        self.buttonLayout.addWidget(self.removeButton)
+
+        self.addDevice.clicked.connect(self.deviceAdd)
+        self.removeButton.clicked.connect(self.deviceRemove)
+        
         
         # Adds the dock widget to the main layout for the manage room plane
         self.layout.addWidget(self.roomTree)
+        self.layout.addLayout(self.buttonLayout)
 
     def populateTable(self, room):
         """
@@ -386,23 +418,125 @@ class ManageRooms(QWidget):
             deviceName = QTableWidgetItem("{}".format(devices[deviceIndex][0]))
             devicePurpose = QTableWidgetItem("{}".format(devices[deviceIndex][1]))
             deviceImportance = QTableWidgetItem("{}".format(devices[deviceIndex][2]))
-            self.removeButton = QPushButton("Remove")
 
             self.deviceTable.setItem(deviceIndex, 0, deviceName)
             self.deviceTable.setItem(deviceIndex, 1, devicePurpose)
             self.deviceTable.setItem(deviceIndex, 2, deviceImportance)
-            self.deviceTable.setCellWidget(deviceIndex, 3, self.removeButton)
 
-            self.removeButton.clicked.connect(self.removeDevice)
+   #///////////////////////////////////////////////////////////////////// Device add functions
 
-    def removeDevice(self):
-        print("It's working. IT'S WORKING!!!!")
-            
+    def deviceAdd(self):
+        newAddition = QDialog()
+        dialogLayout = QVBoxLayout(newAddition)
+
+        # Widget for the access combo box
+        self.accessBox = QComboBox()
+        self.accessBox.setEditable(False)
+
+        # Gets rooms from the database and adds them to the combo box
+        rooms = self.db.getRooms()
+        for room_index in range(0, self.db.countRooms()[0]):
+            self.accessBox.addItem(rooms[room_index][0])
+
+        self.deviceName = QLineEdit()
+        self.deviceImportance = QLineEdit()
+        self.devicePurpose = QLineEdit()
+
+        # Form for the user to enter in new device information
+        formLayout = QFormLayout()
+        formLayout.addRow(QLabel("Device Name"), self.deviceName)
+        formLayout.addRow(QLabel("Device Importance"), self.deviceImportance)
+        formLayout.addRow(QLabel("Device Purpose"), self.devicePurpose)
+        formLayout.addRow(QLabel("Device Location"), self.accessBox)
+
+        # Adds the okay and cancel button at the bottom
+        QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        
+        buttonBox = QDialogButtonBox(QBtn)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        
+        dialogLayout.addLayout(formLayout)
+        dialogLayout.addWidget(buttonBox)
+
+        newAddition.setWindowTitle("Add Device")
+        newAddition.exec()
+
+    def accept(self):
+        """
+            Summary: Loads new device information into the database
+        """
+        self.db.addDevice(self.deviceName.text(), self.devicePurpose.text(), self.deviceImportance.text(), self.accessBox.currentText())
+
+        logging.info("Added new device: {}".format(self.deviceName))
+
+    def reject(self):
+        """
+            Summary: Exists the dialog window without saving any information
+        """
+        print("Rejected")
+        
+   #///////////////////////////////////////////////////////////////////// Device Remove Functions
+
+    def deviceRemove(self):
+        """
+            Summary: Displays a table of ever device for users to remove
+        """
+        removeDeviceDialog = QDialog()
+
+        dialogLayout = QVBoxLayout(removeDeviceDialog)
+        
+        devices = self.db.getDevices()
+        deviceCount = len(devices)
+
+        self.removeDeviceTable = QTableWidget(self.db.countDevices()[0], 5, self)
+        self.removeDeviceTable.setHorizontalHeaderLabels(["Name", "Purpose", "Importance", "Location", "Remove"])
+
+        # Formats the table to fill up all avaliable space
+        self.removeDeviceTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode(1))
+
+        # Here is where all of the information is unpacked and inserted into the table
+        for deviceIndex in range(0, deviceCount):
+            deviceName = QTableWidgetItem("{}".format(devices[deviceIndex][0]))
+            devicePurpose = QTableWidgetItem("{}".format(devices[deviceIndex][1]))
+            deviceImportance = QTableWidgetItem("{}".format(devices[deviceIndex][2]))
+            deviceLocation = QTableWidgetItem("{}".format(devices[deviceIndex][3]))
+            deviceRemove = QPushButton("Kill")
+
+            self.removeDeviceTable.setItem(deviceIndex, 0, deviceName)
+            self.removeDeviceTable.setItem(deviceIndex, 1, devicePurpose)
+            self.removeDeviceTable.setItem(deviceIndex, 2, deviceImportance)
+            self.removeDeviceTable.setItem(deviceIndex, 3, deviceLocation)
+            self.removeDeviceTable.setCellWidget(deviceIndex, 4, deviceRemove)
+
+            deviceRemove.clicked.connect(self.killDevice)
+
+        dialogLayout.addWidget(self.removeDeviceTable)
+
+        removeDeviceDialog.exec_()
+
+    def killDevice(self):
+        buttonClicked = self.sender()
+        index = self.removeDeviceTable.indexAt(buttonClicked.pos())
+        deviceRow = index.row()
+
+        # User name is extracted from the table then removed
+        item = self.removeDeviceTable.item(deviceRow, 0)
+        deviceName = item.text()
+
+        print(deviceName)
+
+        self.removeDeviceTable.removeRow(deviceRow)
+
+        self.db.removeDevice(deviceName)
+        self.db.commitChanges()
+
 
 class Logs(QWidget):
     """
-        Summary:
+        Summary: Displays all of the entry logs from the database
     """
+    #TODO: Add button to limit amount of logs seen
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -412,13 +546,17 @@ class Logs(QWidget):
         self.db = Database()
         self.db.connectToDatabase()
 
-        self.logsTable = QTableWidget(5 ,4)
-        self.logsTable.setHorizontalHeaderLabels(["Date", "Location", "Respone", "User"])
+        #retrieves data for the logs.
+        logsCount = self.db.countPictures()
+
+        # creates the table for the log view
+        self.logsTable = QTableWidget(logsCount[0] ,4)
+        self.logsTable.setHorizontalHeaderLabels(["Date", "Location", "Response", "User"])
         self.populateTable()
 
         # Formats the table to fill up all avaliable space
         self.logsTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode(1))
-        
+        self.logsTable.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode(3))
 
         self.layout.addWidget(self.logsTable)
 
@@ -430,8 +568,18 @@ class Logs(QWidget):
         entries = self.db.getEntry()
 
         for entryIndex in range(0, len(entries)):
-            date = entries[entryIndex][0]
-            print(date)
+
+            # Unpacks the information from the database
+            date = QTableWidgetItem("{}".format(entries[entryIndex][0]))
+            location = QTableWidgetItem("{}".format(entries[entryIndex][1]))
+            response = QTableWidgetItem("{}".format(entries[entryIndex][2]))
+            user = QTableWidgetItem("{}".format(entries[entryIndex][3]))
+
+            self.logsTable.setItem(entryIndex, 0, date)
+            self.logsTable.setItem(entryIndex, 1, location)
+            self.logsTable.setItem(entryIndex, 2, response)
+            self.logsTable.setItem(entryIndex, 3, user)
+            
 
 class Diagnostics(QWidget):
     """
@@ -491,6 +639,7 @@ class CustomDialogs(QDialog):
             self.msg = QLabel("No camera module connected")
 
         self.error = QLabel(errorMessage)
+        self.layout.addWidget(self.msg)
         self.layout.addWidget(self.error)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)

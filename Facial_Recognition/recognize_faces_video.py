@@ -17,7 +17,19 @@ from datetime import datetime
 import numpy as np
 import imagezmq.imagezmq.imagezmq as imagezmq
 import cv2
+import logging
+import sys
+
+sys.path.append("../Database")
+from db_interface import Database
+
  
+# sets up the logging stuff
+logging.basicConfig(filename="../GozerLogs/GozerEntrance.log", filemode="a", level=logging.INFO, format='%(asctime)s - %(levelname)s -%(message)s', datefmt='%d-%b-%y %H:%M:%S')
+
+# Configures the database
+db = Database()
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-e", "--encodings", required=True,
@@ -87,33 +99,35 @@ while True:
  
 		# check to see if we have found a match
 		if True in matches:
+			
 			# find the indexes of all matched faces then initialize a
 			# dictionary to count the total number of times each face
 			# was matched
 			matchedIdxs = [i for (i, b) in enumerate(matches) if b]
 			counts = {}
- 
+			
 			# loop over the matched indexes and maintain a count for
 			# each recognized face face
 			for i in matchedIdxs:
 				name = data["names"][i]
 				counts[name] = counts.get(name, 0) + 1
- 
-			# determine the recognized face with the largest number
-			# of votes (note: in the event of an unlikely tie Python
-			# will select first entry in the dictionary)
-			name = max(counts, key=counts.get)
+				
+				# determine the recognized face with the largest number
+				# of votes (note: in the event of an unlikely tie Python
+				# will select first entry in the dictionary)
+				name = max(counts, key=counts.get)
+
+			#################################### PLACE REACTION CODE HERE ###################################################
 		
+			if name != "Unknown":
+				# time.sleep(10)
+				print("success {} from {}".format(name, rpiName))
+		
+				logging.info("{} Entering from {} at {}".format(name, rpiName, datetime.now()))
+			#################################################################################################################
+				
 		# update the list of names
 		names.append(name)
-
-	#################################### PLACE REACTION CODE HERE ###################################################
-
-	if "DO_NOT_REMOVE" in names:
-		# time.sleep(10)
-		print("success")
-
-	#################################################################################################################
 
     # loop over the recognized faces
 	for ((top, right, bottom, left), name) in zip(boxes, names):
