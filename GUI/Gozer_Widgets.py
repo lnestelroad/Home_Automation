@@ -10,11 +10,13 @@ import os
 import shutil
 import logging
 import cv2
+import subprocess
 
 sys.path.append("../Database")
 from db_interface import Database
 
 class ManageUsers(QWidget):
+    #TODO: fix file path stuff
     """
         Summary: This is the widget that will be used to manage the users in the database. There
             are 2 main parts to this view: The add user form and the current user table. The form is
@@ -36,6 +38,7 @@ class ManageUsers(QWidget):
      #//////////////////////////////////////////////////////////////////////////////// Form layout
         #TODO: add additional options for time frame when guest is selected
 
+        #TODO: Make the combo box only accept certain characters
         # Widget for the access combo box
         self.accessBox = QComboBox()
         self.accessBox.setEditable(False)
@@ -45,19 +48,20 @@ class ManageUsers(QWidget):
         for room_index in range(0, self.db.countRooms()[0]):
             self.accessBox.addItem(rooms[room_index][0])
 
-        self.FirstName = QLineEdit()
+        self.firstName = QLineEdit()
         self.lastName = QLineEdit()
         self.bluetooth = QLineEdit()
+        self.bluetooth.setMaxLength(12)
         
         # Layout which holds all of the user data input fields
         self.form = QFormLayout()
-        self.form.addRow(QLabel("First Name"), self.FirstName)
+        self.form.addRow(QLabel("First Name"), self.firstName)
         self.form.addRow(QLabel("Last Name"), self.lastName)
         self.form.addRow(QLabel("BluetoothID"), self.bluetooth)
         self.form.addRow(QLabel("Access"), self.accessBox)
 
         # Connect fields
-        self.FirstName.textChanged.connect(self.enableAddUserButton)
+        self.firstName.textChanged.connect(self.enableAddUserButton)
         self.lastName.textChanged.connect(self.enableAddUserButton)
         self.bluetooth.textChanged.connect(self.enableAddUserButton)
 
@@ -69,9 +73,9 @@ class ManageUsers(QWidget):
         self.edit = QPushButton("Change")
 
         self.add.setDisabled(True)
-        self.add.clicked.connect(self.CreateUser)
+        self.add.clicked.connect(self.createUser)
 
-        self.clear.clicked.connect(self.ClearForm)
+        self.clear.clicked.connect(self.clearForm)
 
         self.edit.setDisabled(True)
         self.edit.clicked.connect(self.Modify)
@@ -89,12 +93,16 @@ class ManageUsers(QWidget):
 
         self.progress = QProgressBar()
         self.progress.setValue(0)
+        self.progress.setTextVisible(True)
+        self.progress.setAlignment(Qt.AlignCenter)
+
         self.upload = QPushButton("Upload")
         self.submit = QPushButton("Submit")
 
         self.submit.setDisabled(True)
         self.submit.clicked.connect(self.encodeFace)
 
+        self.upload.setDisabled(True)
         self.upload.clicked.connect(self.uploadPicutes)
 
         buttonLayout.addWidget(self.upload)
@@ -128,61 +136,94 @@ class ManageUsers(QWidget):
         manageUsersLayout.addWidget(self.userTable, 2, 0)
 
     def enableAddUserButton(self):
-        validFirstName = self.FirstName.text() != ""
+        """
+            Summary: This function is used to activated both the add user and upload button only when the form is filled out.
+        """
+
+        # Determines if the form fields are empty or not
+        validfirstName = self.firstName.text() != ""
         validLastName = self.lastName.text() != ""
         validBluetooth = self.bluetooth.text() != ""
         
-        self.add.setEnabled(validBluetooth and validFirstName and validLastName)
+        # Checks to see if the length for the bluetooth is correct
+        if len(self.bluetooth.text()) != 12:
+            validBluetooth = False
 
-    def CreateUser(self):
+        
+        # Activates the upload picture and add user button
+        self.add.setEnabled(validBluetooth and validfirstName and validLastName)
+        self.upload.setEnabled(validBluetooth and validfirstName and validLastName)
+
+    def createUser(self):
         """
             Summary: Here is where the python script will add all of the user info to both the data base
                 and a directory for pictures to be stored.
         """
-        # TODO: Duplicate users?
+        # Gets the users information from the database
+        users = self.db.getUsers()
+
         # Gets the data from the form.
-        name = self.FirstName.text() + "_" + self.lastName.text()
+        name = self.firstName.text() + "_" + self.lastName.text()
         bluetooth = self.bluetooth.text()
         access = self.accessBox.currentText()
 
-        os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset")
+        # Formats the bluetooth ID into its proper form
+        bluetooth = bluetooth.upper()
+        bluetooth = ':'.join(a+b for a,b in zip(bluetooth[::2], bluetooth[1::2]))
 
-        # TODO: add path which is not a relative path
-        if access != "Guest":
-            try:
-                # Creates a directory for the users pictures if they are not a guest
-                os.mkdir("{}".format(name))
+        # Checks to see if user already exists in the database
+        flag = True
+        for userIndex in range(0, len(users)):
+            if name in users[userIndex]:
+                flag = False
 
-                # Enters data information into the database
-                self.db.addUser(name, bluetooth, access)
-                self.db.commitChanges()
+        # If user does exit, the flag is tripped skipping this and erroring out
+        if flag:
+            os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset")
 
-                # Enters new data into table view
-                self.populateTable()
+            # TODO: add path which is not a relative path
+            # Enters data information into the database
+            self.db.addUser(name, bluetooth, access)
+            self.db.commitChanges()
 
-                # Clears the form
-                self.ClearForm()
+            # Enters new data into table view
+            self.populateTable()
 
-                # Added user documented in log
-                logging.info("{} added to application".format(name))
+            # Clears the form
+            self.clearForm()
 
-            except OSError as error:
-                # An error dialog is brought up telling the user what went wrong
-                logging.warning("Could not create directory. \n\tError:\n\t{}".format(error))
-                dlg = CustomDialogs("already_Exists", "{}".format(error))
-                dlg.exec_()
+            # Added user documented in log
+            logging.info("{} added to application".format(name))
+
+            if access != "Guest":
+                try:
+                    # Creates a directory for the users pictures if they are not a guest
+                    os.mkdir("{}".format(name))
+
+                except OSError as error:
+                    # An error dialog is brought up telling the user what went wrong
+                    logging.warning("Could not create directory. \n\tError:\n\t{}".format(error))
+                    dlg = CustomDialogs("already_Exists", "{}".format(error))
+                    dlg.exec_()
+                    self.clearForm()
         else:
-            #TODO: add guest users
-            print("adding guest user")
+            logging.warning("Could not create directory. \n\tError:\n\tDuplicate Entry")
+            dlg = CustomDialogs("already_Exists", "Duplicate Entry")
+            dlg.exec_()
+            self.clearForm()
 
-    def ClearForm(self):
-        self.FirstName.setText("")
+    def clearForm(self):
+        self.firstName.setText("")
         self.lastName.setText("")
         self.bluetooth.setText("")
+        self.accessBox.setCurrentIndex(0)
+
+        self.bluetooth.setMaxLength(12)
 
         self.setProgressBar("")
+        self.submit.setDisabled(True)
 
-    def RemoveUser(self):
+    def removeUser(self):
         #TODO: add function to remove user from face encoding
         # Finds the exact row of the button pressed. Thank you Sam from StackOverFlow
         buttonClicked = self.sender()
@@ -207,7 +248,14 @@ class ManageUsers(QWidget):
         path = "./{}".format(userName)
         
         try:
-            os.rmdir(path)
+            # removes the directory of the user being removed
+            shutil.rmtree(path, ignore_errors=True)
+            self.setProgressBar("")
+            self.clearForm()
+            self.encodeFace()
+
+            #TODO: add re-encoding process here
+
         except OSError as error:
             logging.warning("Could not remove directory. \n\tError:\n\t{}".format(error))
             dlg = CustomDialogs("error", "{}".format(error))
@@ -240,7 +288,7 @@ class ManageUsers(QWidget):
             self.userTable.setItem(i,2,userRoom)
             self.userTable.setCellWidget(i, 3, self.removeButton)
 
-            self.removeButton.clicked.connect(self.RemoveUser)
+            self.removeButton.clicked.connect(self.removeUser)
         
         # Allows double clicking on rows for editing
         self.userTable.setEditTriggers( QTableWidget.NoEditTriggers)
@@ -251,9 +299,11 @@ class ManageUsers(QWidget):
     def setProgressBar(self, userName):
         """
             Summary: This is used to set the state of the progess bar for any given user
+                NOTE: make userName "" to set the bar to neutral (0/20).
         """
         if userName == "":
             self.progress.setValue(0)
+            self.progress.setFormat("0/20")
         
         else:
             os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset/{}".format(userName))
@@ -266,28 +316,30 @@ class ManageUsers(QWidget):
             if progressValue >= 100:
                 self.submit.setEnabled(True)
                 self.progress.setValue(100)
+                self.progress.setFormat("{}: {}/20".format(userName, files))
 
             else:
                 self.progress.setValue(progressValue)
+                self.progress.setFormat("{}: {}/20".format(userName, files))
 
     def uploadPicutes(self):
         """
             Summary: This will have python open a camera module and take a picture of the user. Once the picture is
                 taken, it will be saved in the users designated directory in the facial recognition site.
         """
-        # TODO: fix this shit dawg
-        userName = self.FirstName.text() + "_" + self.lastName.text()
+        # TODO: Set working derectory to the file's location
+        userName = self.firstName.text() + "_" + self.lastName.text()
         os.chdir("/home/liam_work/Documents/Home_Automation/Facial_Recognition/dataset/{}".format(userName))
+
+        # Opens the camera for the user to add pictures of them selves.
         try:
             cam = cv2.VideoCapture(0)
-
-            cv2.namedWindow("test")
+            cv2.namedWindow("")
 
             img_counter = 0
-
             while True:
                 ret, frame = cam.read()
-                cv2.imshow("test", frame)
+                cv2.imshow("User Picture add - Press ESC to Exit - Press Space to take Picture", frame)
                 if not ret:
                     break
                 k = cv2.waitKey(1)
@@ -296,6 +348,8 @@ class ManageUsers(QWidget):
                     # ESC pressed
                     print("Escape hit, closing...")
                     break
+
+                # Takes photo when space bar is pressed.
                 elif k%256 == 32:
                     # SPACE pressed
                     img_name = "{}{}.png".format(userName, img_counter)
@@ -315,39 +369,77 @@ class ManageUsers(QWidget):
             dlg.exec_()
 
     def encodeFace(self):
+        #TODO: add progress bar for this
         """
             Summary: Once enough pictures have been uploaded, this will kick off the encode_faces.py script in the
                 facial recognition directory
         """
-
+        os.chdir("/home/liam_work/Documents/Home_Automation/GUI")
+        subprocess.call('./encode.sh')
+        
     def editItem(self, item):
+        """
+            Summary: Here is where the form is set up for the user to be edited.
+                NOTE: this function will no update the user in the database directly, but rather
+                by calling another function.
+        """
         userRow = item.row()
 
         # Splits the users name into first and last
         name = self.userTable.item(userRow, 0).text().split("_")
 
+        # Finds the index of the room in the combo box
+        index = self.accessBox.findText(self.userTable.item(userRow, 2).text())
+        
+        # Allows for the combo box to display the whole modified bluetooth ID
+        self.bluetooth.setMaxLength(17)
+
         # Sets the Add user table to all of the
-        self.FirstName.setText(name[0])
+        self.firstName.setText(name[0])
         self.lastName.setText(name[1])
         self.bluetooth.setText(self.userTable.item(userRow, 1).text())
+        self.accessBox.setCurrentIndex(index)
 
-        self.setProgressBar(self.userTable.item(userRow, 0).text())
         self.add.setDisabled(True)
         self.edit.setDisabled(False)
+        self.upload.setDisabled(False)
+
+        self.ORIGINAL_FIRST_NAME = name[0]
+        self.ORIGINAL_LAST_NAME = name[1]
+        
+        if self.accessBox.currentText() != "Guest":
+            self.setProgressBar(self.userTable.item(userRow, 0).text())
+        else:
+            self.upload.setDisabled(True)
+            self.setProgressBar("")
 
     def Modify(self):
         #TODO: Finish this
         """
             Summary: This is the function that will push the changes to the user into the database
         """
-        print("modify works")
+        # Gets the current data in the fom
+        firstName = self.firstName.text()
+        lastName = self.lastName.text()
+        bluetooth = self.bluetooth.text()
+        access = self.accessBox.currentText()
+
+        # gets the name of the user for editing
+        combinedOriginalName = self.ORIGINAL_FIRST_NAME + "_" + self.ORIGINAL_LAST_NAME
+
+        # removes the user from the database then readds them with the changes
+        self.db.removeUser(combinedOriginalName)
+        self.db.addUser(combinedOriginalName, bluetooth, access)
+        self.db.commitChanges()
+
+        # the table is re populated
+        self.populateTable()
+        self.clearForm()
 
 
 class ManageRooms(QWidget):
     """
-        Summary:
-        Input:
-        Output:
+        Summary: This class will display the manage rooms window
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -426,6 +518,7 @@ class ManageRooms(QWidget):
    #///////////////////////////////////////////////////////////////////// Device add functions
 
     def deviceAdd(self):
+        # Add to Custom Dialog class
         newAddition = QDialog()
         dialogLayout = QVBoxLayout(newAddition)
 
@@ -469,12 +562,6 @@ class ManageRooms(QWidget):
         self.db.addDevice(self.deviceName.text(), self.devicePurpose.text(), self.deviceImportance.text(), self.accessBox.currentText())
 
         logging.info("Added new device: {}".format(self.deviceName))
-
-    def reject(self):
-        """
-            Summary: Exists the dialog window without saving any information
-        """
-        print("Rejected")
         
    #///////////////////////////////////////////////////////////////////// Device Remove Functions
 
@@ -566,6 +653,7 @@ class Logs(QWidget):
         """
         # Gets all of the log information from the database
         entries = self.db.getEntry()
+        print(entries)
 
         for entryIndex in range(0, len(entries)):
 
@@ -574,6 +662,8 @@ class Logs(QWidget):
             location = QTableWidgetItem("{}".format(entries[entryIndex][1]))
             response = QTableWidgetItem("{}".format(entries[entryIndex][2]))
             user = QTableWidgetItem("{}".format(entries[entryIndex][3]))
+
+            print(date)
 
             self.logsTable.setItem(entryIndex, 0, date)
             self.logsTable.setItem(entryIndex, 1, location)

@@ -89,6 +89,7 @@ class Database():
         # This is the lowest access level for the house. When a new user is added, the room is set for guest which is why its added along with the table definition
         self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Guest",))
         self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Master",))
+        self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Non-Resident",))
 
         # Execute and commit the sql
         self.cxn.commit()
