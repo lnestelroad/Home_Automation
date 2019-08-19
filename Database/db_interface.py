@@ -4,6 +4,8 @@ import sqlite3
 import argparse
 import datetime
 
+#TODO: The log information depends on the userID. Since the auto increment feature does not reset which causes issues in the logs.
+
 class Database():
     """
         Summary: This class is used for interaction with the Gozer_database.db sql file. Since sqlite3 has nice integration with 
@@ -276,7 +278,7 @@ class Database():
             # retrieves all entries should the user not give a request amount
             pictures_table_entries = self.cursor.fetchall()
 
-        # print(pictures_table_entries)
+        print(pictures_table_entries)
         return pictures_table_entries
 
     def getRooms(self):
