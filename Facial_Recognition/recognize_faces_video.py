@@ -29,6 +29,7 @@ logging.basicConfig(filename="../GozerLogs/GozerEntrance.log", filemode="a", lev
 
 # Configures the database
 db = Database()
+db.connectToDatabase()
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -118,12 +119,16 @@ while True:
 				name = max(counts, key=counts.get)
 
 			#################################### PLACE REACTION CODE HERE ###################################################
-		
+			#TODO: Added scripts to activate locks
+
 			if name != "Unknown":
-				# time.sleep(10)
 				print("success {} from {}".format(name, rpiName))
-		
+				
 				logging.info("{} Entering from {} at {}".format(name, rpiName, datetime.now()))
+				db.addEntry(datetime.now(), rpiName, "Accepted", name)
+				db.commitChanges()
+				
+				time.sleep(10)
 			#################################################################################################################
 				
 		# update the list of names

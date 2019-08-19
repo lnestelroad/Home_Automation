@@ -455,7 +455,7 @@ class ManageRooms(QWidget):
         # Initiates a layout and a tree widget
         self.layout = QVBoxLayout(self)
         self.roomTree = QTreeWidget()
-        self.roomTree.setHeaderLabel("Bedrooms")
+        self.roomTree.setHeaderLabels(["Bedrooms"])
 
         # retrieves the room count and the room names
         roomCount = self.db.countRooms()
@@ -562,6 +562,8 @@ class ManageRooms(QWidget):
         self.db.addDevice(self.deviceName.text(), self.devicePurpose.text(), self.deviceImportance.text(), self.accessBox.currentText())
 
         logging.info("Added new device: {}".format(self.deviceName))
+
+        self.update()
         
    #///////////////////////////////////////////////////////////////////// Device Remove Functions
 
