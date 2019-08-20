@@ -6,6 +6,7 @@ import sys
 import os
 from time import time
 from camera import VideoCamera
+import subprocess
 
 # sys.path.append("../Database")
 # from db_interface import Database
@@ -31,6 +32,8 @@ def buttonActions():
 
     if request.form["submit_button"] == "Open Front Door":
         print ("Opening Front Door")
+        os.chdir("~/Documents/Home_Automation/Web")
+        subprocess.call("./commands.py")
 
     elif request.form["submit_button"] == "Open Garage Door":
         print ("Opening Garage Door")
@@ -72,15 +75,21 @@ def lighting():
     return render_template("base.html", rooms=["Living Room", "Liam's Room", "Isaac's Room"])
 
 def gen(camera):
-    while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    try:
+        while True:
+            frame = camera.get_frame()
+            yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    except:
+        return "failed"
   
 @app.route('/video_feed/')
 def video_feed():
-    return Response(gen(VideoCamera()),
+    try:
+        return Response(gen(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')    
+    except:
+        return "failed"
 
 if (__name__ == "__main__"):
     app.run(debug=True)

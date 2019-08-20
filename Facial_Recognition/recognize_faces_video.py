@@ -23,7 +23,9 @@ import sys
 sys.path.append("../Database")
 from db_interface import Database
 
- 
+# Sets up the zmq server for the web site to comunicate with this script
+#TODO:?
+
 # sets up the logging stuff
 logging.basicConfig(filename="../GozerLogs/GozerEntrance.log", filemode="a", level=logging.INFO, format='%(asctime)s - %(levelname)s -%(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
@@ -67,7 +69,6 @@ while True:
 	# receive RPi name and frame from the RPi and acknowledge
 	# the receipt
 	(rpiName, frame) = imageHub.recv_image()
-	imageHub.send_reply(b'OK')
 
 	# update the new frame in the frame dictionary
 	frameDict[rpiName] = frame
@@ -90,8 +91,15 @@ while True:
 	encodings = face_recognition.face_encodings(rgb, boxes)
 	names = []
 
-    	# loop over the facial embeddings
+	# flag is created for imageHub reply sending
+	flag = True
+
+    # loop over the facial embeddings
 	for encoding in encodings:
+
+		# Flag is tripped so no other messages are sent to the client
+		flag = False
+
 		# attempt to match each face in the input image to our known
 		# encodings
 		matches = face_recognition.compare_faces(data["encodings"],
@@ -128,7 +136,20 @@ while True:
 				db.addEntry(datetime.now(), rpiName, "Accepted", name)
 				db.commitChanges()
 				
-				time.sleep(10)
+				imageHub.send_reply(b'Open Door')
+
+				time.sleep(2)
+
+		else:
+			print("Unknown User!")
+
+			logging.warning("Unknown user approaching at {}: Time - {}".format(rpiName, datetime.now()))
+			db.addEntry(datetime.now(), rpiName, "Rejected", "Unknown")
+			db.commitChanges()
+
+			imageHub.send_reply(b"test")
+
+			time.sleep(5)
 			#################################################################################################################
 				
 		# update the list of names
@@ -177,6 +198,9 @@ while True:
 		# if the `q` key was pressed, break from the loop
 		if key == ord("q"):
 			break
+
+	if flag:
+		imageHub.send_reply(b'OK')
 
 # do a bit of cleanup
 cv2.destroyAllWindows()
