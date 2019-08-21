@@ -113,3 +113,5 @@
 21-Aug-19 10:40:34 - INFO -127.0.0.1 - - [21/Aug/2019 10:40:34] "GET /video_feed/ HTTP/1.1" 200 -
 21-Aug-19 10:40:38 - INFO -127.0.0.1 - - [21/Aug/2019 10:40:38] "POST /cameraMovement/ HTTP/1.1" 200 -
 21-Aug-19 10:40:38 - INFO -127.0.0.1 - - [21/Aug/2019 10:40:38] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 10:50:53 - WARNING - * Debugger is active!
+21-Aug-19 10:50:53 - INFO - * Debugger PIN: 138-622-692

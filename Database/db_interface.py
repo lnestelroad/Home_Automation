@@ -272,7 +272,6 @@ class Database():
             # retrieves all entries should the user not give a request amount
             pictures_table_entries = self.cursor.fetchall()
 
-        print(pictures_table_entries)
         return pictures_table_entries
 
     def getRooms(self):
@@ -335,7 +334,7 @@ class Database():
         """
             Summary: This is what will be called whenever a device is needed to be removed from the database
         """
-        self.cursor.execute("DELETE FROM Devices WHERE DeviceName = ?;", (_deviceName,))
+        self.cursor.execute("DELETE FROM Devices WHERE Name = ?;", (_deviceName,))
 
     def removeRoom(self, _roomName):
         """
