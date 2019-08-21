@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-from flask import Flask, request, render_template, Response
-import logging
-import sys
 import os
-from time import time
-from camera import VideoCamera
+import sys
+import logging
 import subprocess
+from time import time
 from datetime import datetime
+from camera import VideoCamera
+from flask import Flask, request, render_template, Response
 
 # sys.path.append("../Database")
 # from db_interface import Database
@@ -29,7 +29,8 @@ def buttonActions():
             here where python will determine which button was pressed and then respond accordingly.
     """
     # Changes directory to the files location
-    os.chdir("/home/liam_work/Documents/Home_Automation/Web")
+    path = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(path)
 
     # Determines which button was pressed then activates the motion scripts
     if request.form["submit_button"] == "Open Front Door":

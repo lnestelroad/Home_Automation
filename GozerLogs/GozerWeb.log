@@ -115,3 +115,55 @@
 21-Aug-19 10:40:38 - INFO -127.0.0.1 - - [21/Aug/2019 10:40:38] "GET /video_feed/ HTTP/1.1" 200 -
 21-Aug-19 10:50:53 - WARNING - * Debugger is active!
 21-Aug-19 10:50:53 - INFO - * Debugger PIN: 138-622-692
+21-Aug-19 12:35:48 - INFO - * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+21-Aug-19 12:35:48 - INFO - * Restarting with stat
+21-Aug-19 12:35:48 - WARNING - * Debugger is active!
+21-Aug-19 12:35:48 - INFO - * Debugger PIN: 138-622-692
+21-Aug-19 12:36:01 - INFO -127.0.0.1 - - [21/Aug/2019 12:36:01] "GET / HTTP/1.1" 200 -
+21-Aug-19 12:36:01 - INFO -127.0.0.1 - - [21/Aug/2019 12:36:01] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 12:38:07 - INFO - * Detected change in '/home/liam_work/Documents/Home_Automation/Web/Gozer_Web_run.py', reloading
+21-Aug-19 12:38:07 - INFO - * Restarting with stat
+21-Aug-19 12:38:08 - WARNING - * Debugger is active!
+21-Aug-19 12:38:08 - INFO - * Debugger PIN: 138-622-692
+21-Aug-19 12:38:17 - INFO - * Detected change in '/home/liam_work/Documents/Home_Automation/Web/Gozer_Web_run.py', reloading
+21-Aug-19 12:38:17 - INFO - * Restarting with stat
+21-Aug-19 12:38:17 - WARNING - * Debugger is active!
+21-Aug-19 12:38:17 - INFO - * Debugger PIN: 138-622-692
+21-Aug-19 13:18:30 - WARNING -Front door opened at 2019-08-21 13:18:30.074045
+21-Aug-19 13:18:30 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:30] "POST /onButtonClick/ HTTP/1.1" 200 -
+21-Aug-19 13:18:30 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:30] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:31 - WARNING -Front door opened at 2019-08-21 13:18:31.714870
+21-Aug-19 13:18:31 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:31] "POST /onButtonClick/ HTTP/1.1" 200 -
+21-Aug-19 13:18:31 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:31] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:33 - WARNING -Front door opened at 2019-08-21 13:18:33.552756
+21-Aug-19 13:18:33 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:33] "POST /onButtonClick/ HTTP/1.1" 200 -
+21-Aug-19 13:18:33 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:33] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:40 - WARNING -Front door opened at 2019-08-21 13:18:40.336815
+21-Aug-19 13:18:40 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:40] "POST /onButtonClick/ HTTP/1.1" 200 -
+21-Aug-19 13:18:40 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:40] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:41 - WARNING -Front door opened at 2019-08-21 13:18:41.487147
+21-Aug-19 13:18:41 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:41] "POST /onButtonClick/ HTTP/1.1" 200 -
+21-Aug-19 13:18:41 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:41] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:43 - WARNING -Front door opened at 2019-08-21 13:18:43.213609
+21-Aug-19 13:18:43 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:43] "POST /onButtonClick/ HTTP/1.1" 200 -
+21-Aug-19 13:18:43 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:43] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:44 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:44] "POST /lighting/ HTTP/1.1" 200 -
+21-Aug-19 13:18:44 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:44] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:45 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:45] "POST /lighting/ HTTP/1.1" 200 -
+21-Aug-19 13:18:45 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:45] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:48 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:48] "POST /lighting/ HTTP/1.1" 200 -
+21-Aug-19 13:18:48 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:48] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:18:50 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:50] "POST /lighting/ HTTP/1.1" 200 -
+21-Aug-19 13:18:50 - INFO -127.0.0.1 - - [21/Aug/2019 13:18:50] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:21:16 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:16] "POST /cameraMovement/ HTTP/1.1" 200 -
+21-Aug-19 13:21:16 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:16] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:21:17 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:17] "POST /cameraMovement/ HTTP/1.1" 200 -
+21-Aug-19 13:21:17 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:17] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:21:18 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:18] "POST /cameraMovement/ HTTP/1.1" 200 -
+21-Aug-19 13:21:18 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:18] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 13:21:18 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:18] "POST /cameraMovement/ HTTP/1.1" 200 -
+21-Aug-19 13:21:19 - INFO -127.0.0.1 - - [21/Aug/2019 13:21:19] "GET /video_feed/ HTTP/1.1" 200 -
+21-Aug-19 14:50:47 - INFO - * Detected change in '/home/liam_work/Documents/Home_Automation/Web/Gozer_Web_run.py', reloading
+21-Aug-19 14:50:47 - INFO - * Restarting with stat
+21-Aug-19 14:50:47 - WARNING - * Debugger is active!
+21-Aug-19 14:50:47 - INFO - * Debugger PIN: 138-622-692
