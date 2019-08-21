@@ -4,6 +4,8 @@ import sqlite3
 import argparse
 import datetime
 
+#TODO: The log information depends on the userID. Since the auto increment feature does not reset which causes issues in the logs.
+
 class Database():
     """
         Summary: This class is used for interaction with the Gozer_database.db sql file. Since sqlite3 has nice integration with 
@@ -81,14 +83,14 @@ class Database():
                 Date TEXT NOT NULL,\
                 Location TEXT,\
                 Response TEXT,\
-                UserID INTEGER,\
-                FOREIGN KEY(UserID) REFERENCES Users(UserID)\
+                UserName TEXT\
                 );"
         self.cursor.execute(Pictures)
 
         # This is the lowest access level for the house. When a new user is added, the room is set for guest which is why its added along with the table definition
         self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Guest",))
         self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Master",))
+        self.cursor.execute("INSERT INTO Bedrooms (RoomName) VALUES (?);", ("Non-Resident",))
 
         # Execute and commit the sql
         self.cxn.commit()
@@ -185,11 +187,8 @@ class Database():
             Input: Requires the date, time, location, response, and the user who entered
             Output:
         """
-        self.cursor.execute("SELECT UserID FROM Users WHERE UserName = ?;", (_user,))
-        IdentifiedUser = self.cursor.fetchall()
-
-        self.cursor.execute("INSERT INTO Pictures (Date, Location, Response, UserID)\
-            VALUES (?,?,?,?);", (_date, _location, _response, IdentifiedUser[0][0]))
+        self.cursor.execute("INSERT INTO Pictures (Date, Location, Response, UserName)\
+            VALUES (?,?,?,?);", (_date, _location, _response, _user))
 
 #################### Database retrieval #######################################
     def getUsers(self, request = 0):
@@ -244,10 +243,8 @@ class Database():
         """
 
         # Submits sql query for the pictures table. The table is selected with decreasing order so that the most resent is given first
-        self.cursor.execute("SELECT Pictures.Date, Pictures.Location, Pictures.Response, Users.UserName\
+        self.cursor.execute("SELECT Pictures.Date, Pictures.Location, Pictures.Response, Pictures.UserName\
             FROM Pictures\
-            INNER JOIN Users\
-            ON Users.UserID = Pictures.UserID\
             ORDER BY PictureID DESC;")
 
         # checks to see if the user has given a desired amount of entries to be returned
@@ -275,7 +272,6 @@ class Database():
             # retrieves all entries should the user not give a request amount
             pictures_table_entries = self.cursor.fetchall()
 
-        # print(pictures_table_entries)
         return pictures_table_entries
 
     def getRooms(self):
@@ -338,7 +334,7 @@ class Database():
         """
             Summary: This is what will be called whenever a device is needed to be removed from the database
         """
-        self.cursor.execute("DELETE FROM Devices WHERE DeviceName = ?;", (_deviceName,))
+        self.cursor.execute("DELETE FROM Devices WHERE Name = ?;", (_deviceName,))
 
     def removeRoom(self, _roomName):
         """
