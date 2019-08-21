@@ -455,7 +455,7 @@ class ManageRooms(QWidget):
         # Initiates a layout and a tree widget
         self.layout = QVBoxLayout(self)
         self.roomTree = QTreeWidget()
-        self.roomTree.setHeaderLabel("Bedrooms")
+        self.roomTree.setHeaderLabels(["Bedrooms"])
 
         # retrieves the room count and the room names
         roomCount = self.db.countRooms()
@@ -547,7 +547,7 @@ class ManageRooms(QWidget):
         
         buttonBox = QDialogButtonBox(QBtn)
         buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
+        # buttonBox.rejected.connect(self.reject)
         
         dialogLayout.addLayout(formLayout)
         dialogLayout.addWidget(buttonBox)
@@ -561,7 +561,7 @@ class ManageRooms(QWidget):
         """
         self.db.addDevice(self.deviceName.text(), self.devicePurpose.text(), self.deviceImportance.text(), self.accessBox.currentText())
 
-        logging.info("Added new device: {}".format(self.deviceName))
+        logging.info("Added new device: {}".format(self.deviceName.text()))
         
    #///////////////////////////////////////////////////////////////////// Device Remove Functions
 
@@ -679,8 +679,8 @@ class Diagnostics(QWidget):
         super().__init__(*args, **kwargs)
 
         self.layout = QHBoxLayout(self)
-        self.simpleText = QTextEdit("Diagnostics")
-        self.layout.addWidget(self.simpleText)
+        self.resetButton = QPushButton("SYSTEM RESET")
+        self.layout.addWidget(self.resetButton)
 
 
 class SelfDestruct(QWidget):
@@ -727,6 +727,9 @@ class CustomDialogs(QDialog):
         elif dialogType == "camera":
             self.setWindowTitle("Camera Error")
             self.msg = QLabel("No camera module connected")
+
+        elif dialogType == "addRoom":
+            pass
 
         self.error = QLabel(errorMessage)
         self.layout.addWidget(self.msg)
