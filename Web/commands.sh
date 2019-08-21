@@ -22,6 +22,7 @@
 #
 # Original author: Robert Siemer
 # Adapted by: Nicholas Zimmerer
+# Modified by: Liam Nestelroad
 #
 # Reference: https://stackoverflow.com/a/29754866
 #
@@ -114,6 +115,16 @@ done
 #     exit 4
 # fi
 
+# Determines what action was requested
+if [[ $ACT -eq 1 ]]; then
+    ACT="Opening"
+elif [[ $ACT -eq 0 ]]; then
+    ACT="Closing"
+else
+    echo "action must either be a 1 for open or 0 for close"
+    exit 2
+fi
+
 # Determines if location and action flags were used
 if ! $actionFlag && !$locationFlag; then
     echo "-a and -l flags are required"
@@ -123,25 +134,25 @@ fi
 # Executes location specific script 
 case "$LOC" in
     frontDoor)
-        echo "front"
+        ssh pi3 'bash -s' < ../actions/frontDoor.sh $ACT
         ;;
     backDoor)
-        echo "<NOT OPERATIONAL YET>"
+        ssh pi3 'bash -s' < ../actions/backDoor.sh $ACT
         ;;
     garage)
-        echo "<NOT OPERATIONAL YET>"
+        ssh pi3 'bash -s' < ../actions/garageDoor.sh $ACT
         ;;
     frontBlinds)
-        echo "<NOT OPERATIONAL YET>"
+        ssh pi3 'bash -s' < ../actions/frontBlinds.sh $ACT
         ;;
     backBlinds)
-        echo "<NOT OPERATIONAL YET>"
+        ssh pi3 'bash -s' < ../actions/backBlinds.sh $ACT
         ;;
     liamsBlinds)
-        echo "<NOT OPERATIONAL YET>"
+        ssh pi3 'bash -s' < ../actions/liamsBlinds.sh $ACT
         ;;
     vacation)
-        echo "<NOT OPERATIONAL YET>"
+        ssh pi3 'bash -s' < ../actions/vacation.sh $ACT
         ;;
     *)
         echo "No location specified"
@@ -157,15 +168,8 @@ fi
 # Display verbose output, if VERBOSE flag set
 if [[ $VERBOSE -eq 1 ]]; then
 
-    # Determines what action was requested
-    if [[ $ACT -eq 1 ]]; then
-        status="Opening"
-    else
-        status="Closing"
-    fi
-
     # prints the action and location
-    printf "\t$status $LOC\n"
+    printf "\t$ACT $LOC\n"
 fi
 
 # # After all out shifts, the only remaining parameter is FILE, located at $1

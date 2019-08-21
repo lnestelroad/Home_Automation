@@ -7,6 +7,7 @@ import os
 from time import time
 from camera import VideoCamera
 import subprocess
+from datetime import datetime
 
 # sys.path.append("../Database")
 # from db_interface import Database
@@ -14,7 +15,7 @@ import subprocess
 app = Flask(__name__)
 
 # Initiates logging module
-# logging.basicConfig(filename="../GozerLogs/GozerWeb.log", filemode="a", level=logging.WARNING, format='%(asctime)s - %(levelname)s -%(message)s', datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(filename="/home/liam_work/Documents/Home_Automation/GozerLogs/GozerWeb.log", filemode="a", level=logging.WARNING, format='%(asctime)s - %(levelname)s -%(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/default")
@@ -27,32 +28,45 @@ def buttonActions():
         Summary: This function will hold all of buttons reaction code. By sending post requests, the decorator will redirect flask
             here where python will determine which button was pressed and then respond accordingly.
     """
+    # Changes directory to the files location
+    os.chdir("/home/liam_work/Documents/Home_Automation/Web")
 
-    #TODO: add python scripts to operate circuitry here.
-
+    # Determines which button was pressed then activates the motion scripts
     if request.form["submit_button"] == "Open Front Door":
         print ("Opening Front Door")
-        os.chdir("~/Documents/Home_Automation/Web")
-        subprocess.call("./commands.py")
-
-    elif request.form["submit_button"] == "Open Garage Door":
-        print ("Opening Garage Door")
+        subprocess.check_call("./commands.sh %s %s" % ("-a 1", "-l frontDoor"), shell=True)
+        logging.warning("Front door opened at {}".format(datetime.now()))
 
     elif request.form["submit_button"] == "Lock Front Door":
         print ("Locking Front Door")
+        subprocess.check_call("./commands.sh %s %s" % ("-a 0", "-l frontDoor"), shell=True)
+        logging.warning("Front door opened at {}".format(datetime.now()))
+
+    elif request.form["submit_button"] == "Open Garage Door":
+        print ("Opening Garage Door")
+        subprocess.check_call("./commands.sh %s %s" % ("-a 1", "-l garage"), shell=True)
+        logging.warning("Front door opened at {}".format(datetime.now()))
 
     elif request.form["submit_button"] == "Close Garage Door":
         print ("Closing Garage Door")
+        subprocess.check_call("./commands.sh %s %s" % ("-a 0", "-l garage"), shell=True)
+        logging.warning("Front door opened at {}".format(datetime.now()))
 
     elif request.form["submit_button"] == "Open Blinds":
         print ("Opening Blinds")
+        subprocess.check_call("./commands.sh %s %s" % ("-a 1", "-l frontBlinds"), shell=True)
+        logging.warning("Front door opened at {}".format(datetime.now()))
 
     elif request.form["submit_button"] == "Close Blinds":
         print ("Closing Blinds")
+        subprocess.check_call("./commands.sh %s %s" % ("-a 0", "-l frontBlinds"), shell=True)
+        logging.warning("Front door opened at {}".format(datetime.now()))
 
     elif request.form["submit_button"] == "Vacation":
         print ("Vacation Mode")
-
+        subprocess.check_call("./commands.sh %s %s" % ("-a 1", "-l vacation"), shell=True)
+        logging.warning("Front door opened at {}".format(datetime.now()))
+        
     return render_template("base.html", rooms=["Liam's Room", "Isaac's Room"])
 
 @app.route("/cameraMovement/", methods=['GET', 'POST'])
@@ -63,6 +77,12 @@ def cameraMovement():
     
     elif "down" in request.form:
         print("down")
+    
+    elif "right" in request.form:
+        print ("right")
+
+    elif "left" in request.form:
+        print ("left")
 
     return render_template("base.html", rooms=["Living Room", "Liam's Room", "Isaac's Room"])
 
