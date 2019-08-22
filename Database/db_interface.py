@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sqlite3
 import argparse
 import datetime
@@ -28,8 +29,11 @@ class Database():
             Outputs: A sqlite cursor for interaction with the database.
         """
         try:
+            self.path = os.path.dirname(os.path.abspath(__file__))
+            os.chdir(self.path)
+
             # Create a connection to the database
-            self.cxn = sqlite3.connect("/home/liam_work/Documents/Home_Automation/Database/Gozer_database.db")
+            self.cxn = sqlite3.connect("{}/Gozer_database.db".format(self.path))
             print("Opening Connections to database")
 
             # Create a cursor from the database connection
@@ -366,58 +370,58 @@ def main():
 
     #/////////////////////////////////////////////////////
 
-    # Room add check
-    interface.addRoom("Liam's Room")
-    interface.addRoom("Isaac's Room")
-    interface.addRoom("Ryan's Room")
-    interface.addRoom("Izzy's Room")
+    # # Room add check
+    # interface.addRoom("Liam's Room")
+    # interface.addRoom("Isaac's Room")
+    # interface.addRoom("Ryan's Room")
+    # interface.addRoom("Izzy's Room")
 
 
-    # Device add check
-    interface.addDevice("Google Home", "Central Unit", "Medium", "Liam's Room")
-    interface.addDevice("Philibs Light", "Lights room", "Low", "Liam's Room")
+    # # Device add check
+    # interface.addDevice("Google Home", "Central Unit", "Medium", "Liam's Room")
+    # interface.addDevice("Philibs Light", "Lights room", "Low", "Liam's Room")
 
-    interface.addDevice("Philibs Light", "Lights room", "Low", "Isaac's Room")
+    # interface.addDevice("Philibs Light", "Lights room", "Low", "Isaac's Room")
 
-    # User add Check
-    interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Liam's Room")
-    interface.addUser("Isaac_Martienz", "12:34:56:78:90", "Isaac's Room")
+    # # User add Check
+    # interface.addUser("Liam_Nestelroad", "9C:E3:3F:8C:4F:BE", "Liam's Room")
+    # interface.addUser("Isaac_Martienz", "12:34:56:78:90", "Isaac's Room")
 
-    # Pictures add check
-    now = datetime.datetime.now()
-    interface.addEntry(now, "Front Door", "Accepted", "Liam_Nestelroad")
-    interface.addEntry(now, "Garage", "Accepted", "Liam_Nestelroad")
+    # # Pictures add check
+    # now = datetime.datetime.now()
+    # interface.addEntry(now, "Front Door", "Accepted", "Liam_Nestelroad")
+    # interface.addEntry(now, "Garage", "Accepted", "Liam_Nestelroad")
 
-    # Change check
-    interface.commitChanges()
-
-    #/////////////////////////////////////////////////////
-
-    # User retrieval check 
-    interface.getUsers(1)
-    interface.getUsers()
-
-    interface.getEntry(1)
-    print(interface.getEntry())
-
-    # Room retrieval check
-    interface.getRooms()
-
-    # Devices retrieval check
-    interface.getDevices("Liam's Room")
-    interface.getDevices("Isaac's Room")
-
-    #/////////////////////////////////////////////////////
-
-    # User delete test
-    # interface.removeUser("Liam_Nestelroad")
+    # # Change check
     # interface.commitChanges()
 
-    # Table Counts
-    print(interface.countUsers())
-    print(interface.countDevices())
-    print(interface.countRooms())
-    print(interface.countPictures())
+    # #/////////////////////////////////////////////////////
+
+    # # User retrieval check 
+    # interface.getUsers(1)
+    # interface.getUsers()
+
+    # interface.getEntry(1)
+    # print(interface.getEntry())
+
+    # # Room retrieval check
+    # interface.getRooms()
+
+    # # Devices retrieval check
+    # interface.getDevices("Liam's Room")
+    # interface.getDevices("Isaac's Room")
+
+    # #/////////////////////////////////////////////////////
+
+    # # User delete test
+    # # interface.removeUser("Liam_Nestelroad")
+    # # interface.commitChanges()
+
+    # # Table Counts
+    # print(interface.countUsers())
+    # print(interface.countDevices())
+    # print(interface.countRooms())
+    # print(interface.countPictures())
 
 
 if __name__ == "__main__":
