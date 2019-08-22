@@ -58,6 +58,7 @@
 14-Aug-19 08:39:56 - INFO -Admin Login
 14-Aug-19 08:42:00 - INFO -Admin Login
 14-Aug-19 08:43:55 - INFO -Admin Login
+<<<<<<< HEAD
 14-Aug-19 11:17:01 - INFO -Admin Login
 14-Aug-19 11:17:21 - INFO -Admin Login
 14-Aug-19 11:22:47 - INFO -Admin Login
@@ -297,3 +298,6 @@
 21-Aug-19 11:57:13 - INFO -Admin Login
 21-Aug-19 11:58:48 - INFO -Admin Login
 21-Aug-19 12:44:06 - INFO -Admin Login
+=======
+21-Aug-19 18:40:05 - INFO -Admin Login
+>>>>>>> c31a8c41722e142b2332911764278a91f5c46f6e
