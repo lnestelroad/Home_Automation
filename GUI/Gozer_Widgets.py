@@ -27,9 +27,8 @@ class ManageUsers(QWidget):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        
         self.path = os.path.dirname(os.path.abspath(__file__))
-        os.chdir(self.path)
 
         manageUsersLayout = QGridLayout(self)
         addUsersLayout = QGridLayout()
@@ -450,6 +449,9 @@ class ManageRooms(QWidget):
         # TODO: Fix table so that it only has entries for how many devices are in each room
         # TODO: Make add and remove device functions.
         # TODO: Add function to count devices based on room in db_interface
+
+        self.path = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(self.path)
 
         # Connects the application to the database
         self.db = Database()

@@ -301,3 +301,36 @@
 =======
 21-Aug-19 18:40:05 - INFO -Admin Login
 >>>>>>> c31a8c41722e142b2332911764278a91f5c46f6e
+21-Aug-19 20:26:10 - INFO -Admin Login
+21-Aug-19 20:32:29 - INFO -Admin Login
+21-Aug-19 20:32:57 - INFO -Admin Login
+21-Aug-19 20:38:40 - INFO -Admin Login
+21-Aug-19 20:39:51 - INFO -Admin Login
+21-Aug-19 20:45:14 - INFO -Admin Login
+21-Aug-19 20:46:48 - INFO -Admin Login
+21-Aug-19 20:47:01 - INFO -Admin Login
+21-Aug-19 20:47:13 - INFO -Admin Login
+21-Aug-19 20:56:36 - INFO -Admin Login
+21-Aug-19 21:13:07 - INFO -Admin Login
+21-Aug-19 22:50:10 - INFO -Admin Login
+21-Aug-19 22:56:58 - INFO -Admin Login
+21-Aug-19 23:01:06 - INFO -Admin Login
+22-Aug-19 09:38:46 - INFO -Admin Login
+22-Aug-19 09:44:00 - INFO -Admin Login
+22-Aug-19 09:44:55 - INFO -Admin Login
+22-Aug-19 09:48:24 - INFO -Admin Login
+22-Aug-19 09:49:09 - INFO -Admin Login
+22-Aug-19 09:49:20 - INFO -Admin Login
+22-Aug-19 09:49:33 - INFO -Admin Login
+22-Aug-19 09:51:22 - INFO -Admin Login
+22-Aug-19 09:52:33 - INFO -Admin Login
+22-Aug-19 09:53:50 - INFO -Admin Login
+22-Aug-19 09:54:05 - INFO -Liam_Nestelroad added to application
+22-Aug-19 09:54:05 - WARNING -Could not create directory. 
+	Error:
+	[Errno 17] File exists: 'Liam_Nestelroad'
+22-Aug-19 09:54:16 - INFO -Liam_Nestelroad removed from database
+22-Aug-19 09:54:31 - INFO -test_user added to application
+22-Aug-19 09:54:37 - WARNING -No Camera Found
+22-Aug-19 09:54:55 - INFO -Admin Login
+22-Aug-19 09:54:58 - INFO -test_user removed from database

@@ -30,7 +30,7 @@ class Database():
         """
         try:
             self.path = os.path.dirname(os.path.abspath(__file__))
-            os.chdir(self.path)
+            print(self.path)
 
             # Create a connection to the database
             self.cxn = sqlite3.connect("{}/Gozer_database.db".format(self.path))
@@ -358,23 +358,34 @@ class Database():
 def main():
     """ This is used only for testing purposes"""
 
+    # construct the argument parser and parse the arguments
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-b", "--build", required=True, type=int, default=0,
+        help="path to serialized db of facial encodings")
+    args = vars(ap.parse_args())
+
     print ("Hello, World!")
 
     # Database add check
     interface = Database()
     interface.connectToDatabase()
 
-    # Database removal check
-    interface.Destroy()
-    interface.setupTables()
-
+    # checks to see if flag was tripped
+    if args["build"] == 1:
+        interface.setupTables()
+    
+    else:
+        # Database removal check
+        interface.Destroy()
+        interface.setupTables()
+  
     #/////////////////////////////////////////////////////
 
     # # Room add check
-    # interface.addRoom("Liam's Room")
-    # interface.addRoom("Isaac's Room")
-    # interface.addRoom("Ryan's Room")
-    # interface.addRoom("Izzy's Room")
+    interface.addRoom("Liam's Room")
+    interface.addRoom("Isaac's Room")
+    interface.addRoom("Ryan's Room")
+    interface.addRoom("Izzy's Room")
 
 
     # # Device add check
@@ -393,7 +404,7 @@ def main():
     # interface.addEntry(now, "Garage", "Accepted", "Liam_Nestelroad")
 
     # # Change check
-    # interface.commitChanges()
+    interface.commitChanges()
 
     # #/////////////////////////////////////////////////////
 
