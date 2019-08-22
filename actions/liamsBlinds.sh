@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo "Service not avaliable yet" >> /tmp/home_automation/logs.txt
+echo "Service not avaliable yet" >> /var/log/home_automation/logs.txt
 echo $1 $0

@@ -134,7 +134,7 @@ fi
 # Executes location specific script 
 case "$LOC" in
     frontDoor)
-        ssh pi3 'bash -s' < ../actions/frontDoor.sh $ACT
+        ssh zero 'bash -s' < ../actions/frontDoor.sh $ACT
         ;;
     backDoor)
         ssh pi3 'bash -s' < ../actions/backDoor.sh $ACT
