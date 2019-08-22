@@ -1,0 +1,16 @@
+PyQt5==5.12.3
+PyQt5-sip==4.19.17
+
+opencv-contrib-python==4.1.0.25
+
+sqlite3
+zmq==0.0.0
+pyzmq==18.0.2
+
+numpy==1.16.4
+imutils==0.5.2
+face-recognition==1.2.3
+face-recognition-models==0.3.0
+dlib==19.17.0
+
+Flask==1.1.1
