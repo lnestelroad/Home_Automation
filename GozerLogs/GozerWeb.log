@@ -237,3 +237,40 @@
 22-Aug-19 11:05:35 - WARNING -Front door opened at 2019-08-22 11:05:35.779770
 22-Aug-19 11:05:35 - INFO -127.0.0.1 - - [22/Aug/2019 11:05:35] "POST /onButtonClick/ HTTP/1.1" 200 -
 22-Aug-19 11:05:36 - INFO -127.0.0.1 - - [22/Aug/2019 11:05:36] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 12:41:40 - INFO - * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+22-Aug-19 12:41:40 - INFO - * Restarting with stat
+22-Aug-19 12:41:40 - WARNING - * Debugger is active!
+22-Aug-19 12:41:40 - INFO - * Debugger PIN: 138-622-692
+22-Aug-19 12:41:51 - WARNING -Front door opened at 2019-08-22 12:41:51.223748
+22-Aug-19 12:41:51 - INFO -127.0.0.1 - - [22/Aug/2019 12:41:51] "POST /onButtonClick/ HTTP/1.1" 200 -
+22-Aug-19 12:41:51 - INFO -127.0.0.1 - - [22/Aug/2019 12:41:51] "GET /static/styles/base.css HTTP/1.1" 200 -
+22-Aug-19 12:41:51 - INFO -127.0.0.1 - - [22/Aug/2019 12:41:51] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 12:41:59 - INFO -127.0.0.1 - - [22/Aug/2019 12:41:59] "POST /cameraMovement/ HTTP/1.1" 200 -
+22-Aug-19 12:42:00 - INFO -127.0.0.1 - - [22/Aug/2019 12:42:00] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 12:42:01 - INFO -127.0.0.1 - - [22/Aug/2019 12:42:01] "POST /cameraMovement/ HTTP/1.1" 200 -
+22-Aug-19 12:42:01 - INFO -127.0.0.1 - - [22/Aug/2019 12:42:01] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 12:42:10 - WARNING -Front door opened at 2019-08-22 12:42:10.187296
+22-Aug-19 12:42:10 - INFO -127.0.0.1 - - [22/Aug/2019 12:42:10] "POST /onButtonClick/ HTTP/1.1" 200 -
+22-Aug-19 12:42:10 - INFO -127.0.0.1 - - [22/Aug/2019 12:42:10] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 12:42:34 - WARNING -Front door opened at 2019-08-22 12:42:34.967379
+22-Aug-19 12:42:34 - INFO -127.0.0.1 - - [22/Aug/2019 12:42:34] "POST /onButtonClick/ HTTP/1.1" 200 -
+22-Aug-19 12:42:35 - INFO -127.0.0.1 - - [22/Aug/2019 12:42:35] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 12:43:09 - WARNING -Front door opened at 2019-08-22 12:43:09.504402
+22-Aug-19 12:43:09 - INFO -127.0.0.1 - - [22/Aug/2019 12:43:09] "POST /onButtonClick/ HTTP/1.1" 200 -
+22-Aug-19 12:43:09 - INFO -127.0.0.1 - - [22/Aug/2019 12:43:09] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 12:43:12 - WARNING -Front door opened at 2019-08-22 12:43:12.117329
+22-Aug-19 12:43:12 - INFO -127.0.0.1 - - [22/Aug/2019 12:43:12] "POST /onButtonClick/ HTTP/1.1" 200 -
+22-Aug-19 12:43:12 - INFO -127.0.0.1 - - [22/Aug/2019 12:43:12] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 13:27:44 - INFO - * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+22-Aug-19 13:27:44 - INFO - * Restarting with stat
+22-Aug-19 13:27:44 - WARNING - * Debugger is active!
+22-Aug-19 13:27:44 - INFO - * Debugger PIN: 138-622-692
+22-Aug-19 13:27:51 - WARNING -Front door opened at 2019-08-22 13:27:51.608349
+22-Aug-19 13:27:51 - INFO -127.0.0.1 - - [22/Aug/2019 13:27:51] "POST /onButtonClick/ HTTP/1.1" 200 -
+22-Aug-19 13:27:51 - INFO -127.0.0.1 - - [22/Aug/2019 13:27:51] "GET /static/styles/base.css HTTP/1.1" 200 -
+22-Aug-19 13:27:52 - INFO -127.0.0.1 - - [22/Aug/2019 13:27:52] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 13:28:09 - INFO -127.0.0.1 - - [22/Aug/2019 13:28:09] "POST /cameraMovement/ HTTP/1.1" 200 -
+22-Aug-19 13:28:09 - INFO -127.0.0.1 - - [22/Aug/2019 13:28:09] "GET /video_feed/ HTTP/1.1" 200 -
+22-Aug-19 13:28:44 - WARNING -Front door opened at 2019-08-22 13:28:44.567455
+22-Aug-19 13:28:44 - INFO -127.0.0.1 - - [22/Aug/2019 13:28:44] "POST /onButtonClick/ HTTP/1.1" 200 -
+22-Aug-19 13:28:45 - INFO -127.0.0.1 - - [22/Aug/2019 13:28:45] "GET /video_feed/ HTTP/1.1" 200 -

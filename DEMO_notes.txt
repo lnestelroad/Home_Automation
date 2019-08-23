@@ -1,0 +1,93 @@
+Setup:
+    2 pi terminals already ssh in (both tmuxed, one for zmq and one for logs)
+    2 regular terminals for showing results
+    pi's turned on
+    Clone rep at beginning
+
+
+Prelims:
+    Good Afternoon and thank you all for coming! Just a few things before we get started:
+        * Stage Fright
+        * Still in development
+
+Intro:
+    This project was built and designed to incorporate a lot of the smart devices found in homes all across America
+        * Google homes
+        * Philips light bulbs
+        * smart locks
+
+    Most can be access with some kind of API or just through the terminal. Thats where Gozer Comes in.
+        * Give gozer background *
+
+Features:
+    The goal for this project was to create a frame work which could be easily implemented and expanded upon.
+    my basic requirements for this project was to have a working database to hold permissions and home info as well as a GUI to 
+    interact with it (which I will show later). There also needed to be a working facial recognition software in place and a 
+    basic website to interact with physical devices.
+
+        * Working database and GUI
+        * Facial recognition
+        * Sit to interact with physical devices
+
+    For the stretch goals I really wanted to make this an IoT type deal where the pis just acted as IP camera and sent
+    database to a central computer. This inturn would make it easier for multiple cameras. Would have also liked
+    some working circuitry for this presentation but, due to moving, didn't quite have time.
+
+        * IoT
+        * circuitry
+        * other small issues
+
+How it works:
+    * explain picture *
+
+Database:
+    * explain picture *
+
+Web:
+    This is another one of those places where functionality is limited due to the lack of circuitry. With that being said however,
+    there was a lot of expandability implemented so when those circuits are done, it will be an easy setup.
+
+    For starters, the website will have its own separate live stream. Initially I wanted to have the Raspberry Pi cameras to feed
+    their stream to the site, but upon reflection, I decided that those streams are too choppy and morphed where as a separate
+    stream is clean and easy to see.
+
+        * Wanted pi stream
+        * chose personal stream for clarity
+
+    Below the camera you'll see a d-pad which currently does nothing. Eventually this will be used to move the camera around.
+    It's a similar story with every other button on here unfortunately. The cool thing about the rest however, is that 
+    behind the scenes, the web server is actually ssh ing into what ever pi is at the given location, and executing a script.
+    The really cool thing is that the script is housed on this machine and not on the pi.
+
+        * D-pad does nothing
+        * Other button run behind the scenes
+        * ssh in location pi
+        * scripts housed on this machine
+
+Facial Recognition: (MEAT AND POTATOES)
+    How it works:
+        * Uses openCV4, facial recognition, dlib
+        * Thank you Adrian Rosenbrock
+
+        * 2 steps: Encoding then recognizing
+        * Takes directory or 20+ photos and makes an encoding (128 vector)
+        * OpenCV uses encoding file to analyze frames (part of the facial recognition package)
+
+        * Even if not pictures are uploaded, still recognizes faces
+
+        * uses video from pis rather than local camera
+
+Messaging Queue:
+    What is a messaging queue? 
+
+    * Uses ZMQ to send video from pi to facial recognition program.
+
+    * Factial recogniton sends back a reply to pis via the messaging system. Open door is recognized user,
+        do nothing if unknown.
+
+    
+
+
+
+Demonstration:
+    * Show web communication on Pi's
